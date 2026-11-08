@@ -1,0 +1,386 @@
+# Catálogo de evidências do Vaga Segura
+# Única fonte de pesos, tetos e base legal. Validado por app/modelos/catalogo.py.
+# Pesos iniciais definidos por critério legal; serão recalibrados com o conjunto de teste.
+
+versao: "0.2.0"
+pontuacao_base: 60
+teto_total_confianca: 25
+
+faixas:
+  alto_risco_ate: 34  # 0 a 34
+  atencao_ate: 64  # 35 a 64; 65 a 100 = sem_sinais_relevantes
+  cobertura_minima: 0.4
+  inconclusivo_se_pontuacao_acima_de: 64
+
+condicoes:
+  # relacao_localidade vem das regiões geográficas imediatas do IBGE (ver docs/arquitetura/contratos.md)
+  fora_do_municipio: "relacao_localidade em (mesma_regiao_imediata, outra_regiao_imediata)"
+  fora_da_regiao_imediata: "relacao_localidade = outra_regiao_imediata"
+  mesma_regiao_imediata: "relacao_localidade = mesma_regiao_imediata"
+  vaga_exterior: "local_trabalho.exterior = verdadeiro"
+
+# Divisões CNAE (2 primeiros dígitos) com pouco rastro digital esperado.
+# Nelas, evidências marcadas com neutralizar_em_setores_baixa_presenca não pontuam.
+setores_baixa_presenca_digital:
+  agropecuaria: ["01", "02", "03"]
+  extracao_mineral: ["08"]
+  construcao: ["41", "42", "43"]
+  servico_domestico: ["97"]
+
+combinacoes:
+  - id: indicios_aliciamento_pl_1636
+    base_legal: ["PL 1636/2026, art. 2º, IV"]
+    indicadores:
+      - { id: salario_desproporcional, evidencia: salario_acima_p90 }
+      - { id: dispensa_qualificacao,   evidencia: dispensa_requisitos, quando: [vaga_exterior] }  # a alínea b fala de vaga no exterior
+      - { id: alojamento_fornecido,    extracao: beneficios.alojamento }
+      - { id: pagamento_especie,       evidencia: pagamento_especie }
+      - { id: publico_migrante,        extracao: sinais_texto.publico_migrante }
+    bonus:
+      - { minimo: 2, pontos: -10 }
+      - { minimo: 3, pontos: -20 }  # não acumula com o anterior
+
+evidencias:
+
+  # Fortes
+  - id: lista_suja_documento
+    coletor: listas_mte
+    direcao: risco
+    forca: forte
+    pontos: -60
+    teto: { valor: 10 }
+    criterio_match: [cnpj_exato, cpf_exato, socio_cpf_exato, nome_municipio_cpf_parcial]
+    descricao: Empresa, empregador ou sócio consta no Cadastro de Empregadores (Lista Suja)
+    texto_usuario: "Este empregador aparece no cadastro oficial do Ministério do Trabalho de quem submeteu trabalhadores a condições análogas à escravidão."
+    base_legal: ["Portaria Interministerial MTE/MDHC/MIR nº 18/2024", "CP, art. 149"]
+
+  - id: link_phishing
+    coletor: contato
+    direcao: risco
+    forca: forte
+    pontos: -40
+    teto: { valor: 20 }
+    descricao: Link da mensagem consta em lista pública de sites maliciosos
+    texto_usuario: "Um link desta mensagem aparece em listas de sites usados para golpes. Não clique."
+
+  - id: cnpj_inexistente_ou_invalido
+    coletor: cnpj
+    direcao: risco
+    forca: forte
+    pontos: -40
+    descricao: CNPJ com dígitos inválidos ou não encontrado na Receita Federal
+    texto_usuario: "O CNPJ informado ({valor_observado}) não existe na Receita Federal."
+    base_legal: ["CP, art. 207, §1º (fraude)", "IN MTP nº 2/2021, Anexo II, 1.2"]
+
+  - id: cnpj_inativo
+    coletor: cnpj
+    direcao: risco
+    forca: forte
+    pontos: -35
+    descricao: CNPJ baixado, inapto, suspenso ou nulo
+    texto_usuario: "A empresa está com o CNPJ {valor_observado} na Receita Federal, ou seja, não pode operar normalmente."
+
+  - id: cobranca_antecipada
+    coletor: texto
+    direcao: risco
+    forca: forte
+    pontos: -35
+    teto: { valor: 25, quando: [fora_do_municipio] }
+    descricao: Trabalhador precisa pagar algo antes de começar (taxa, exame, curso, kit)
+    texto_usuario: "A oferta pede que você pague antes de começar: \"{valor_observado}\". Empresas sérias não cobram para contratar."
+    base_legal: ["CP, art. 207, §1º"]
+
+  - id: dominio_titular_divergente
+    coletor: contato
+    direcao: risco
+    forca: forte
+    pontos: -30
+    descricao: O site citado pertence a outro CNPJ, diferente do informado na vaga
+    texto_usuario: "O site citado na oferta pertence a outra empresa ({valor_observado}), não à que oferece a vaga."
+    base_legal: ["CP, art. 207, §1º (fraude)", "IN MTP nº 2/2021, Anexo II, 1.2"]
+
+  - id: pagamento_especie
+    coletor: texto
+    direcao: risco
+    forca: forte
+    pontos: -25
+    descricao: Pagamento somente em dinheiro vivo
+    texto_usuario: "O pagamento seria só em dinheiro vivo, o que dificulta comprovar o que você recebeu."
+    base_legal: ["PL 1636/2026, art. 2º, IV, d"]
+
+  - id: pedido_documentos_originais
+    coletor: texto
+    direcao: risco
+    forca: forte
+    pontos: -25
+    descricao: Pede que o trabalhador entregue documentos originais (RG, carteira de trabalho)
+    texto_usuario: "A oferta pede que você entregue documentos originais. Ninguém pode reter seus documentos."
+    base_legal: ["CP, art. 149, §1º, II", "CP, art. 203, §1º, II", "IN MTP nº 2/2021, Anexo II"]
+
+  - id: compra_estabelecimento_indicado
+    coletor: texto
+    direcao: risco
+    forca: forte
+    pontos: -25
+    descricao: A oferta indica ou obriga onde o trabalhador deve fazer compras (cantina, armazém, mercado do patrão)
+    texto_usuario: "A oferta diz onde você deve fazer suas compras. Comprar fiado no lugar indicado pelo patrão é uma forma conhecida de prender o trabalhador por dívida."
+    base_legal: ["CP, art. 203, §1º, I", "IN MTP nº 2/2021, Anexo II, 4.9"]
+
+  # Moderadas
+  - id: ceac_documento
+    coletor: listas_mte
+    direcao: risco
+    forca: moderada
+    pontos: -25
+    criterio_match: [cnpj_exato, cpf_exato, socio_cpf_exato, nome_municipio_cpf_parcial]
+    descricao: Empregador consta no Cadastro de Empregadores em Ajustamento de Conduta (CEAC)
+    texto_usuario: "Este empregador firmou acordo com o governo após fiscalização de trabalho escravo."
+    base_legal: ["Portaria Interministerial MTE/MDHC/MIR nº 18/2024"]
+
+  - id: contato_repetido_multiplas_empresas
+    coletor: base_propria
+    direcao: risco
+    forca: moderada
+    pontos: -25
+    descricao: Mesmo telefone ou chave PIX já apareceu em ofertas de empresas diferentes
+    texto_usuario: "Este mesmo contato já apareceu em ofertas de outras empresas, o que é comum em golpes e aliciamento."
+
+  - id: sancao_ceis_cnep
+    coletor: sancoes
+    direcao: risco
+    forca: moderada
+    pontos: -20
+    descricao: Empresa com sanção vigente no CEIS ou CNEP (CGU)
+    texto_usuario: "A empresa tem uma punição vigente registrada pela Controladoria-Geral da União."
+
+  - id: salario_acima_p90
+    coletor: salario
+    direcao: risco
+    forca: moderada
+    pontos: -20
+    descricao: Salário acima do P90 do CAGED, ou mais de 2x a mediana, para o cargo e região
+    texto_usuario: "O salário oferecido ({valor_observado}) é muito maior que o comum para esse trabalho na região ({referencia})."
+    base_legal: ["PL 1636/2026, art. 2º, IV, a"]
+
+  - id: alojamento_transporte_destino_distante
+    coletor: rota
+    direcao: risco
+    forca: moderada
+    pontos: -20
+    aplica_quando: [fora_da_regiao_imediata]
+    descricao: Alojamento ou transporte pelo contratante para trabalho fora da região imediata, em outra UF ou no exterior
+    texto_usuario: "A oferta leva você para longe de onde mora ({valor_observado}), com transporte ou alojamento por conta do contratante. É o padrão de aliciamento descrito no art. 207 do Código Penal."
+    base_legal: ["CP, art. 207"]
+
+  - id: alojamento_transporte_outra_localidade
+    coletor: rota
+    direcao: risco
+    forca: moderada
+    pontos: -10
+    aplica_quando: [mesma_regiao_imediata]
+    descricao: Alojamento ou transporte pelo contratante para trabalho em outro município da mesma região imediata
+    texto_usuario: "A oferta é em outra cidade ({valor_observado}), com transporte ou alojamento por conta do contratante. Confirme as condições antes de ir."
+    base_legal: ["CP, art. 207"]
+
+  - id: cnpj_recente
+    coletor: cnpj
+    direcao: risco
+    forca: moderada
+    pontos: -15
+    descricao: CNPJ aberto há menos de 90 dias
+    texto_usuario: "A empresa foi aberta há pouco tempo ({valor_observado})."
+
+  - id: cnae_incompativel_cbo
+    coletor: coerencia
+    direcao: risco
+    forca: moderada
+    pontos: -15
+    descricao: A atividade registrada da empresa não costuma contratar o cargo oferecido
+    texto_usuario: "A atividade registrada da empresa ({valor_observado}) não combina com o cargo oferecido."
+
+  - id: porte_incompativel
+    coletor: coerencia
+    direcao: risco
+    forca: moderada
+    pontos: -15
+    descricao: Porte ou capital social incompatível com o número de vagas ou benefícios
+    texto_usuario: "A empresa é pequena demais ({valor_observado}) para o que está oferecendo."
+
+  - id: salario_abaixo_minimo
+    coletor: salario
+    direcao: risco
+    forca: moderada
+    pontos: -15
+    descricao: Salário abaixo do mínimo nacional ou do piso estadual (valor-hora quando a jornada é informada, porque jornada parcial pode ter salário proporcional)
+    texto_usuario: "O salário ({valor_observado}) está abaixo do mínimo legal ({referencia})."
+    base_legal: ["CF, art. 7º, IV", "IN MTP nº 2/2021, Anexo II, 1.10 e 4.17"]
+
+  - id: empregador_nao_identificavel
+    coletor: cnpj
+    direcao: risco
+    forca: moderada
+    pontos: -10
+    descricao: A oferta não permite identificar quem é o empregador
+    texto_usuario: "Não foi possível identificar quem é o empregador. Peça o nome da empresa e o CNPJ."
+
+  - id: destino_setor_alto_risco
+    coletor: rota
+    direcao: risco
+    forca: moderada
+    pontos: -10
+    descricao: Município e setor de destino com histórico de casos no Cadastro de Empregadores
+    texto_usuario: "Já houve casos de trabalho escravo nesse tipo de atividade na região de destino."
+
+  - id: contato_informal_exclusivo
+    coletor: contato
+    direcao: risco
+    forca: moderada
+    pontos: -10
+    descricao: Contato apenas por WhatsApp ou Telegram e e-mail pessoal
+    texto_usuario: "O contato é só por aplicativo de mensagem, sem canal oficial da empresa."
+
+  - id: adiantamento_contratacao
+    coletor: texto
+    direcao: risco
+    forca: moderada
+    pontos: -15
+    descricao: Adiantamento em dinheiro ou em espécie oferecido na contratação
+    texto_usuario: "A oferta promete um adiantamento na contratação. Esse valor pode virar uma dívida que prende você ao trabalho."
+    base_legal: ["IN MTP nº 2/2021, Anexo II, 4.6", "CP, art. 149"]
+
+  - id: pagamento_ao_fim_do_servico
+    coletor: texto
+    direcao: risco
+    forca: moderada
+    pontos: -15
+    descricao: Pagamento só ao fim de um serviço com mais de 30 dias (safra, obra, empreitada). Se a duração não for informada, entra com confianca_coleta 0,5
+    texto_usuario: "O pagamento só sai quando o serviço terminar. Até lá, você trabalha sem receber."
+    base_legal: ["IN MTP nº 2/2021, Anexo II, 1.15 e 4.18"]
+
+  - id: desconto_moradia_alimentacao_acima_limite
+    coletor: salario
+    direcao: risco
+    forca: moderada
+    pontos: -15
+    descricao: Desconto de moradia ou alimentação acima do limite legal (urbano, CLT art. 458, §3º; rural, Lei 5.889/1973, art. 9º). Sem valor informado, a verificação fica como sem_dados
+    texto_usuario: "O desconto de {valor_observado} passa do limite permitido por lei ({referencia})."
+    base_legal: ["IN MTP nº 2/2021, Anexo II, 4.11", "CLT, art. 458, §3º", "Lei 5.889/1973, art. 9º"]
+
+  - id: custo_viagem_descontado
+    coletor: rota
+    direcao: risco
+    forca: moderada
+    pontos: -15
+    aplica_quando: [fora_do_municipio]
+    descricao: Passagem até o local de trabalho descontada do salário ou cobrada do trabalhador (o vale-transporte diário não conta)
+    texto_usuario: "A passagem até o trabalho seria descontada do seu salário. Você já começaria devendo."
+    base_legal: ["IN MTP nº 2/2021, Anexo II, 4.1 e 4.3", "CP, art. 207, §1º"]
+
+  - id: desconto_ferramentas_epi
+    coletor: texto
+    direcao: risco
+    forca: moderada
+    pontos: -15
+    descricao: Desconto ou cobrança de ferramentas e equipamentos de proteção, que são obrigação do empregador
+    texto_usuario: "A oferta desconta ferramentas ou equipamentos de proteção. Esses itens são obrigação do empregador."
+    base_legal: ["IN MTP nº 2/2021, Anexo II, 4.10", "CLT, art. 166"]
+
+  # Fracas
+  - id: lista_suja_nome_semelhante
+    coletor: listas_mte
+    direcao: risco
+    forca: fraca
+    pontos: -5
+    criterio_match: [nome_aproximado]
+    descricao: Nome parecido com o de um empregador do cadastro, sem confirmação por documento (regra contra homônimos)
+    texto_usuario: "O nome se parece com o de um empregador do cadastro oficial, mas não foi possível confirmar que é a mesma pessoa ou empresa."
+
+  - id: dominio_recente
+    coletor: contato
+    direcao: risco
+    forca: fraca
+    pontos: -10
+    descricao: Domínio do site registrado há menos de 30 dias
+    texto_usuario: "O site da empresa foi criado há poucos dias ({valor_observado})."
+
+  - id: sem_presenca_digital
+    coletor: contato
+    direcao: risco
+    forca: fraca
+    pontos: -5
+    neutralizar_em_setores_baixa_presenca: true
+    descricao: Nenhum site, domínio ou e-mail corporativo associado
+    texto_usuario: "Não encontramos site ou e-mail oficial da empresa."
+
+  - id: ddd_sem_relacao
+    coletor: contato
+    direcao: risco
+    forca: fraca
+    pontos: -5
+    descricao: DDD do telefone não corresponde à UF da empresa nem à da vaga
+    texto_usuario: "O telefone é de outro estado ({valor_observado})."
+
+  - id: urgencia
+    coletor: texto
+    direcao: risco
+    forca: fraca
+    pontos: -5
+    descricao: Pressão de tempo para aceitar
+    texto_usuario: "A oferta pressiona você a decidir rápido."
+
+  - id: dispensa_requisitos
+    coletor: texto
+    direcao: risco
+    forca: fraca
+    pontos: -5
+    descricao: Dispensa total de experiência, qualificação ou documentos
+    texto_usuario: "A oferta não pede nenhuma experiência ou qualificação."
+
+  # Confiança
+  - id: cnpj_ativo_antigo
+    coletor: cnpj
+    direcao: confianca
+    forca: moderada
+    pontos: 10
+    descricao: CNPJ ativo há mais de 2 anos, com porte compatível
+    texto_usuario: "A empresa existe e está ativa há {valor_observado}."
+
+  - id: dominio_titular_confere
+    coletor: contato
+    direcao: confianca
+    forca: moderada
+    pontos: 10
+    descricao: Domínio .br registrado no mesmo CNPJ da vaga
+    texto_usuario: "O site oficial pertence à mesma empresa da vaga."
+
+  - id: endereco_cnpj_no_municipio_vaga
+    coletor: cnpj
+    direcao: confianca
+    forca: fraca
+    pontos: 5
+    descricao: Endereço do CNPJ no mesmo município da vaga
+    texto_usuario: "A empresa tem endereço registrado na cidade da vaga."
+
+  - id: salario_na_faixa
+    coletor: salario
+    direcao: confianca
+    forca: fraca
+    pontos: 5
+    descricao: Salário entre P10 e P90 do CAGED para o cargo e região
+    texto_usuario: "O salário está dentro do comum para esse trabalho na região ({referencia})."
+
+  - id: email_corporativo
+    coletor: contato
+    direcao: confianca
+    forca: fraca
+    pontos: 5
+    descricao: E-mail no domínio da própria empresa
+    texto_usuario: "O contato usa e-mail oficial da empresa."
+
+  - id: contrato_informado
+    coletor: texto
+    direcao: confianca
+    forca: fraca
+    pontos: 5
+    descricao: Tipo de contrato (CLT ou temporário) e jornada informados
+    texto_usuario: "A oferta informa o tipo de contrato e a jornada."

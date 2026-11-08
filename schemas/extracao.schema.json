@@ -1,0 +1,723 @@
+{
+  "$defs": {
+    "Beneficio": {
+      "additionalProperties": false,
+      "properties": {
+        "tipo": {
+          "enum": [
+            "alojamento",
+            "transporte",
+            "passagem",
+            "alimentacao",
+            "adiantamento",
+            "outro"
+          ],
+          "title": "Tipo",
+          "type": "string"
+        },
+        "pago_pelo_contratante": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pago Pelo Contratante"
+        },
+        "trecho": {
+          "minLength": 1,
+          "title": "Trecho",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo",
+        "trecho"
+      ],
+      "title": "Beneficio",
+      "type": "object"
+    },
+    "Campo_int_": {
+      "additionalProperties": false,
+      "properties": {
+        "valor": {
+          "title": "Valor",
+          "type": "integer"
+        },
+        "trecho": {
+          "description": "Cópia literal do trecho da oferta",
+          "minLength": 1,
+          "title": "Trecho",
+          "type": "string"
+        }
+      },
+      "required": [
+        "valor",
+        "trecho"
+      ],
+      "title": "Campo[int]",
+      "type": "object"
+    },
+    "Campo_str_": {
+      "additionalProperties": false,
+      "properties": {
+        "valor": {
+          "title": "Valor",
+          "type": "string"
+        },
+        "trecho": {
+          "description": "Cópia literal do trecho da oferta",
+          "minLength": 1,
+          "title": "Trecho",
+          "type": "string"
+        }
+      },
+      "required": [
+        "valor",
+        "trecho"
+      ],
+      "title": "Campo[str]",
+      "type": "object"
+    },
+    "ChavePix": {
+      "additionalProperties": false,
+      "properties": {
+        "tipo": {
+          "enum": [
+            "cpf",
+            "cnpj",
+            "telefone",
+            "email",
+            "aleatoria",
+            "desconhecido"
+          ],
+          "title": "Tipo",
+          "type": "string"
+        },
+        "valor": {
+          "title": "Valor",
+          "type": "string"
+        },
+        "trecho": {
+          "minLength": 1,
+          "title": "Trecho",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo",
+        "valor",
+        "trecho"
+      ],
+      "title": "ChavePix",
+      "type": "object"
+    },
+    "Cobranca": {
+      "additionalProperties": false,
+      "description": "Qualquer valor que o trabalhador precisa pagar antes de começar.",
+      "properties": {
+        "tipo": {
+          "enum": [
+            "taxa",
+            "exame",
+            "curso",
+            "uniforme",
+            "kit",
+            "documentacao",
+            "passagem",
+            "outro"
+          ],
+          "title": "Tipo",
+          "type": "string"
+        },
+        "valor": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valor"
+        },
+        "trecho": {
+          "minLength": 1,
+          "title": "Trecho",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo",
+        "trecho"
+      ],
+      "title": "Cobranca",
+      "type": "object"
+    },
+    "Contatos": {
+      "additionalProperties": false,
+      "properties": {
+        "telefones": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Campo_str_"
+          },
+          "title": "Telefones",
+          "type": "array"
+        },
+        "emails": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Campo_str_"
+          },
+          "title": "Emails",
+          "type": "array"
+        },
+        "links": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Campo_str_"
+          },
+          "title": "Links",
+          "type": "array"
+        },
+        "chaves_pix": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ChavePix"
+          },
+          "title": "Chaves Pix",
+          "type": "array"
+        },
+        "canal_exclusivo": {
+          "default": "nao_informado",
+          "enum": [
+            "whatsapp",
+            "telegram",
+            "nenhum",
+            "nao_informado"
+          ],
+          "title": "Canal Exclusivo",
+          "type": "string"
+        }
+      },
+      "title": "Contatos",
+      "type": "object"
+    },
+    "Contrato": {
+      "additionalProperties": false,
+      "properties": {
+        "tipo": {
+          "default": "nao_informado",
+          "enum": [
+            "clt",
+            "temporario",
+            "pj",
+            "diarista",
+            "informal",
+            "nao_informado"
+          ],
+          "title": "Tipo",
+          "type": "string"
+        },
+        "jornada": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Campo_str_"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "Contrato",
+      "type": "object"
+    },
+    "Desconto": {
+      "additionalProperties": false,
+      "description": "Valor descontado do salário.",
+      "properties": {
+        "tipo": {
+          "description": "'passagem' é a viagem até o local de trabalho; 'transporte_diario' é o vale-transporte",
+          "enum": [
+            "moradia",
+            "alimentacao",
+            "passagem",
+            "transporte_diario",
+            "ferramentas_epi",
+            "outro"
+          ],
+          "title": "Tipo",
+          "type": "string"
+        },
+        "valor": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Em reais por mês",
+          "title": "Valor"
+        },
+        "percentual": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Percentual do salário, se a oferta disser",
+          "title": "Percentual"
+        },
+        "trecho": {
+          "minLength": 1,
+          "title": "Trecho",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo",
+        "trecho"
+      ],
+      "title": "Desconto",
+      "type": "object"
+    },
+    "Empresa": {
+      "additionalProperties": false,
+      "properties": {
+        "nome": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Campo_str_"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cnpj": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Campo_str_"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Como aparece no texto; a normalização valida os dígitos"
+        }
+      },
+      "title": "Empresa",
+      "type": "object"
+    },
+    "LocalTrabalho": {
+      "additionalProperties": false,
+      "properties": {
+        "municipio": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Municipio"
+        },
+        "uf": {
+          "anyOf": [
+            {
+              "maxLength": 2,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uf"
+        },
+        "zona_rural": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Zona Rural"
+        },
+        "exterior": {
+          "default": false,
+          "title": "Exterior",
+          "type": "boolean"
+        },
+        "pais": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pais"
+        },
+        "modalidade": {
+          "default": "nao_informado",
+          "enum": [
+            "presencial",
+            "remoto",
+            "hibrido",
+            "nao_informado"
+          ],
+          "title": "Modalidade",
+          "type": "string"
+        },
+        "trecho": {
+          "minLength": 1,
+          "title": "Trecho",
+          "type": "string"
+        }
+      },
+      "required": [
+        "trecho"
+      ],
+      "title": "LocalTrabalho",
+      "type": "object"
+    },
+    "Pagamento": {
+      "additionalProperties": false,
+      "properties": {
+        "forma": {
+          "default": "nao_informado",
+          "enum": [
+            "especie",
+            "pix",
+            "deposito",
+            "producao",
+            "nao_informado"
+          ],
+          "title": "Forma",
+          "type": "string"
+        },
+        "momento": {
+          "default": "nao_informado",
+          "description": "'ao_fim_do_servico' quando só paga ao terminar a safra, a obra ou a empreitada",
+          "enum": [
+            "diario",
+            "semanal",
+            "quinzenal",
+            "mensal",
+            "ao_fim_do_servico",
+            "nao_informado"
+          ],
+          "title": "Momento",
+          "type": "string"
+        },
+        "duracao_servico_dias": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Duração prevista do serviço, se informada",
+          "title": "Duracao Servico Dias"
+        },
+        "trecho": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trecho"
+        }
+      },
+      "title": "Pagamento",
+      "type": "object"
+    },
+    "Recrutador": {
+      "additionalProperties": false,
+      "properties": {
+        "nome": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Campo_str_"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cargo_ou_papel": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Campo_str_"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Ex.: 'encarregado', 'gerente', 'RH'"
+        }
+      },
+      "title": "Recrutador",
+      "type": "object"
+    },
+    "Salario": {
+      "additionalProperties": false,
+      "properties": {
+        "valor_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valor Min"
+        },
+        "valor_max": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valor Max"
+        },
+        "periodo": {
+          "default": "nao_informado",
+          "enum": [
+            "hora",
+            "dia",
+            "semana",
+            "quinzena",
+            "mes",
+            "producao",
+            "nao_informado"
+          ],
+          "title": "Periodo",
+          "type": "string"
+        },
+        "trecho": {
+          "minLength": 1,
+          "title": "Trecho",
+          "type": "string"
+        }
+      },
+      "required": [
+        "trecho"
+      ],
+      "title": "Salario",
+      "type": "object"
+    },
+    "SinalTexto": {
+      "additionalProperties": false,
+      "properties": {
+        "tipo": {
+          "enum": [
+            "urgencia",
+            "dispensa_requisitos",
+            "ganho_garantido",
+            "pedido_documentos_originais",
+            "publico_migrante",
+            "sigilo",
+            "compra_estabelecimento_indicado"
+          ],
+          "title": "Tipo",
+          "type": "string"
+        },
+        "trecho": {
+          "minLength": 1,
+          "title": "Trecho",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo",
+        "trecho"
+      ],
+      "title": "SinalTexto",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Saída da etapa 1. É este esquema que vai como JSON Schema para o Ollama.",
+  "properties": {
+    "versao_esquema": {
+      "const": "0.2.0",
+      "default": "0.2.0",
+      "title": "Versao Esquema",
+      "type": "string"
+    },
+    "e_oferta_de_trabalho": {
+      "description": "Falso se o texto não for uma oferta de trabalho",
+      "title": "E Oferta De Trabalho",
+      "type": "boolean"
+    },
+    "empresa": {
+      "$ref": "#/$defs/Empresa",
+      "default": {
+        "nome": null,
+        "cnpj": null
+      }
+    },
+    "recrutador": {
+      "$ref": "#/$defs/Recrutador",
+      "default": {
+        "nome": null,
+        "cargo_ou_papel": null
+      }
+    },
+    "cargo": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Campo_str_"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "quantidade_vagas": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Campo_int_"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "salario": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Salario"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "local_trabalho": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LocalTrabalho"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "beneficios": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Beneficio"
+      },
+      "title": "Beneficios",
+      "type": "array"
+    },
+    "cobrancas": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Cobranca"
+      },
+      "title": "Cobrancas",
+      "type": "array"
+    },
+    "descontos": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Desconto"
+      },
+      "title": "Descontos",
+      "type": "array"
+    },
+    "pagamento": {
+      "$ref": "#/$defs/Pagamento",
+      "default": {
+        "forma": "nao_informado",
+        "momento": "nao_informado",
+        "duracao_servico_dias": null,
+        "trecho": null
+      }
+    },
+    "contrato": {
+      "$ref": "#/$defs/Contrato",
+      "default": {
+        "tipo": "nao_informado",
+        "jornada": null
+      }
+    },
+    "contatos": {
+      "$ref": "#/$defs/Contatos",
+      "default": {
+        "telefones": [],
+        "emails": [],
+        "links": [],
+        "chaves_pix": [],
+        "canal_exclusivo": "nao_informado"
+      }
+    },
+    "sinais_texto": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/SinalTexto"
+      },
+      "title": "Sinais Texto",
+      "type": "array"
+    }
+  },
+  "required": [
+    "e_oferta_de_trabalho"
+  ],
+  "title": "ExtracaoOferta",
+  "type": "object"
+}

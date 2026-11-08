@@ -1,0 +1,50 @@
+{
+  "additionalProperties": false,
+  "description": "O que o usuário envia.",
+  "properties": {
+    "texto": {
+      "description": "Texto da oferta ou texto extraído do print por OCR",
+      "maxLength": 10000,
+      "minLength": 20,
+      "title": "Texto",
+      "type": "string"
+    },
+    "origem": {
+      "default": "texto",
+      "enum": [
+        "texto",
+        "imagem"
+      ],
+      "title": "Origem",
+      "type": "string"
+    },
+    "canal": {
+      "default": "web",
+      "enum": [
+        "web",
+        "whatsapp"
+      ],
+      "title": "Canal",
+      "type": "string"
+    },
+    "municipio_usuario_ibge": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{7}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Município onde o usuário mora, vindo do perfil (código IBGE)",
+      "title": "Municipio Usuario Ibge"
+    }
+  },
+  "required": [
+    "texto"
+  ],
+  "title": "EntradaAnalise",
+  "type": "object"
+}

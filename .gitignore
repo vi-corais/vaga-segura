@@ -1,0 +1,43 @@
+# Notas internas da equipe (competição, entrevista, rascunhos)
+interno/
+
+# Obsidian
+.obsidian/
+.trash/
+
+# Dados baixados pelo ETL (cada um baixa direto da fonte)
+dados/
+*.7z
+*.zip
+*.csv
+*.xlsx
+!tests/**/*.csv
+
+# Segredos e configuração local
+.env
+.env.*
+!.env.exemplo
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Docker e serviços locais
+volumes/
+pgdata/
+ollama/
+
+# Editores e sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

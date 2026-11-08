@@ -1,0 +1,369 @@
+{
+  "$defs": {
+    "Canal": {
+      "additionalProperties": false,
+      "properties": {
+        "nome": {
+          "title": "Nome",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "telefone": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Telefone"
+        }
+      },
+      "required": [
+        "nome"
+      ],
+      "title": "Canal",
+      "type": "object"
+    },
+    "Evidencia": {
+      "additionalProperties": false,
+      "description": "Um fato verificado, com fonte e pontos. Os pontos vêm do catálogo, não do coletor.",
+      "properties": {
+        "id": {
+          "description": "Igual a um id de catalogo/evidencias.yaml",
+          "title": "Id",
+          "type": "string"
+        },
+        "coletor": {
+          "description": "Ex.: 'cnpj', 'listas_mte', 'salario'",
+          "title": "Coletor",
+          "type": "string"
+        },
+        "direcao": {
+          "enum": [
+            "risco",
+            "confianca"
+          ],
+          "title": "Direcao",
+          "type": "string"
+        },
+        "forca": {
+          "enum": [
+            "forte",
+            "moderada",
+            "fraca"
+          ],
+          "title": "Forca",
+          "type": "string"
+        },
+        "pontos": {
+          "description": "Copiado do catálogo pelo motor",
+          "title": "Pontos",
+          "type": "integer"
+        },
+        "confianca_coleta": {
+          "default": 1.0,
+          "description": "Qualidade do dado obtido (ex.: match aproximado < 1)",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confianca Coleta",
+          "type": "number"
+        },
+        "fonte": {
+          "description": "Ex.: 'Cadastro de Empregadores MTE'",
+          "title": "Fonte",
+          "type": "string"
+        },
+        "fonte_data": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Data de referência da fonte",
+          "title": "Fonte Data"
+        },
+        "trecho": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Trecho da oferta relacionado, se houver",
+          "title": "Trecho"
+        },
+        "valor_observado": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Ex.: 'R$ 4.500/mês'",
+          "title": "Valor Observado"
+        },
+        "referencia": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Ex.: 'mediana local R$ 1.680'",
+          "title": "Referencia"
+        },
+        "base_legal": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Base Legal",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "coletor",
+        "direcao",
+        "forca",
+        "pontos",
+        "fonte"
+      ],
+      "title": "Evidencia",
+      "type": "object"
+    },
+    "Explicacao": {
+      "additionalProperties": false,
+      "properties": {
+        "resumo": {
+          "title": "Resumo",
+          "type": "string"
+        },
+        "itens": {
+          "items": {
+            "$ref": "#/$defs/ItemExplicacao"
+          },
+          "title": "Itens",
+          "type": "array"
+        },
+        "perguntas_recrutador": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Perguntas Recrutador",
+          "type": "array"
+        },
+        "orientacoes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Orientacoes",
+          "type": "array"
+        },
+        "canais": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Canal"
+          },
+          "title": "Canais",
+          "type": "array"
+        }
+      },
+      "required": [
+        "resumo",
+        "itens"
+      ],
+      "title": "Explicacao",
+      "type": "object"
+    },
+    "ItemExplicacao": {
+      "additionalProperties": false,
+      "properties": {
+        "evidencia_id": {
+          "description": "O guardrail rejeita item sem evidência correspondente",
+          "title": "Evidencia Id",
+          "type": "string"
+        },
+        "texto": {
+          "title": "Texto",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidencia_id",
+        "texto"
+      ],
+      "title": "ItemExplicacao",
+      "type": "object"
+    },
+    "Verificacao": {
+      "additionalProperties": false,
+      "description": "Registro de cada checagem tentada. É a base do cálculo de cobertura.",
+      "properties": {
+        "coletor": {
+          "title": "Coletor",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "concluida",
+            "nao_aplicavel",
+            "falhou",
+            "sem_dados"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "motivo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Motivo"
+        },
+        "duracao_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duracao Ms"
+        }
+      },
+      "required": [
+        "coletor",
+        "status"
+      ],
+      "title": "Verificacao",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "analise_id": {
+      "format": "uuid",
+      "title": "Analise Id",
+      "type": "string"
+    },
+    "criado_em": {
+      "format": "date-time",
+      "title": "Criado Em",
+      "type": "string"
+    },
+    "versao_catalogo": {
+      "title": "Versao Catalogo",
+      "type": "string"
+    },
+    "versao_esquema": {
+      "title": "Versao Esquema",
+      "type": "string"
+    },
+    "pontuacao": {
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Pontuacao",
+      "type": "integer"
+    },
+    "faixa": {
+      "enum": [
+        "alto_risco",
+        "atencao",
+        "sem_sinais_relevantes",
+        "inconclusivo"
+      ],
+      "title": "Faixa",
+      "type": "string"
+    },
+    "cobertura": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Cobertura",
+      "type": "number"
+    },
+    "tetos_aplicados": {
+      "default": [],
+      "description": "Ids das evidências que aplicaram teto",
+      "items": {
+        "type": "string"
+      },
+      "title": "Tetos Aplicados",
+      "type": "array"
+    },
+    "bonus_combinacao": {
+      "default": 0,
+      "title": "Bonus Combinacao",
+      "type": "integer"
+    },
+    "evidencias": {
+      "items": {
+        "$ref": "#/$defs/Evidencia"
+      },
+      "title": "Evidencias",
+      "type": "array"
+    },
+    "verificacoes": {
+      "items": {
+        "$ref": "#/$defs/Verificacao"
+      },
+      "title": "Verificacoes",
+      "type": "array"
+    },
+    "explicacao": {
+      "$ref": "#/$defs/Explicacao"
+    }
+  },
+  "required": [
+    "analise_id",
+    "criado_em",
+    "versao_catalogo",
+    "versao_esquema",
+    "pontuacao",
+    "faixa",
+    "cobertura",
+    "evidencias",
+    "verificacoes",
+    "explicacao"
+  ],
+  "title": "ResultadoAnalise",
+  "type": "object"
+}

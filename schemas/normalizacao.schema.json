@@ -1,0 +1,254 @@
+{
+  "additionalProperties": false,
+  "description": "Saída da etapa 2. É a entrada comum de todos os coletores.",
+  "properties": {
+    "cnpj": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{14}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Só dígitos",
+      "title": "Cnpj"
+    },
+    "cnpj_digitos_validos": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cnpj Digitos Validos"
+    },
+    "nome_empresa_normalizado": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Sem acento, minúsculo, sem LTDA/ME/EIRELI",
+      "title": "Nome Empresa Normalizado"
+    },
+    "cbo_codigo": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{6}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cbo Codigo"
+    },
+    "cbo_similaridade": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cbo Similaridade"
+    },
+    "municipio_destino_ibge": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{7}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Municipio Destino Ibge"
+    },
+    "uf_destino": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Uf Destino"
+    },
+    "municipio_origem_ibge": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{7}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Municipio Origem Ibge"
+    },
+    "uf_origem": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Uf Origem"
+    },
+    "regiao_imediata_origem": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{6}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Regiao Imediata Origem"
+    },
+    "regiao_imediata_destino": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{6}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Regiao Imediata Destino"
+    },
+    "relacao_localidade": {
+      "default": "desconhecida",
+      "description": "Pelas regiões geográficas imediatas do IBGE. 'nao_se_aplica' = trabalho remoto",
+      "enum": [
+        "mesmo_municipio",
+        "mesma_regiao_imediata",
+        "outra_regiao_imediata",
+        "nao_se_aplica",
+        "desconhecida"
+      ],
+      "title": "Relacao Localidade",
+      "type": "string"
+    },
+    "distancia_km": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Só para exibir. Nenhuma regra usa distância em km",
+      "title": "Distancia Km"
+    },
+    "outra_uf": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Outra Uf"
+    },
+    "salario_mensal_estimado": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Salario Mensal Estimado"
+    },
+    "salario_minimo_referencia": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Mínimo nacional ou piso estadual vigente",
+      "title": "Salario Minimo Referencia"
+    },
+    "dominios": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Dominios",
+      "type": "array"
+    },
+    "email_pessoal": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "gmail, hotmail, outlook etc.",
+      "title": "Email Pessoal"
+    },
+    "ddds": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Ddds",
+      "type": "array"
+    },
+    "documentos_pix": {
+      "default": [],
+      "description": "CPF/CNPJ de chaves PIX, só dígitos",
+      "items": {
+        "type": "string"
+      },
+      "title": "Documentos Pix",
+      "type": "array"
+    }
+  },
+  "title": "Normalizacao",
+  "type": "object"
+}
