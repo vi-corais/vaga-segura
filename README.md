@@ -32,28 +32,6 @@ tests/           testes dos contratos e do catálogo
 docs/            documentação do projeto
 ```
 
-## Como rodar
-
-Requer Python 3.10 ou mais novo (o container da aplicação vai usar 3.12).
-
-```bash
-python -m venv .venv
-source .venv/bin/activate          # no Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
-
-python scripts/validar_catalogo.py # confere pesos, tetos e referências do catálogo
-python scripts/gerar_schemas.py    # regrava schemas/ a partir dos modelos
-pytest                             # roda os testes
-```
-
-As variáveis de ambiente previstas estão em `.env.exemplo`.
-
-## Como contribuir
-
-- Mudou um modelo em `app/modelos/`: suba `VERSAO_ESQUEMA` e rode `python scripts/gerar_schemas.py`.
-- Mudou um peso ou uma evidência em `catalogo/evidencias.yaml`: suba `versao` e rode `python scripts/validar_catalogo.py`.
-- O CI (GitHub Actions) roda as duas verificações e os testes em todo push e pull request.
-
 ## Documentação
 
 - [Resumo do projeto](docs/resumo.md)
