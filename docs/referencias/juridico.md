@@ -66,8 +66,6 @@ O art. 2º, IV dá base legal aos nossos sinais, porque os critérios de "indíc
 |Código Penal, arts. 138 a 140|Calúnia, difamação e injúria, relevantes para a base colaborativa de relatos|
 |Marco Civil da Internet (Lei 12.965/2014)|Responsabilidade por conteúdo de terceiros (os relatos colaborativos)|
 
-Pendente: validar esta seção com alguém da área jurídica antes da entrevista.
-
 ## Referências
 
 - [PL 1636/2026 - ficha de tramitação](https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2613812)

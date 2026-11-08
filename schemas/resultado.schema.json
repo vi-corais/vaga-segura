@@ -1,6 +1,6 @@
 {
   "$defs": {
-    "Canal": {
+    "CanalDenuncia": {
       "additionalProperties": false,
       "properties": {
         "nome": {
@@ -35,44 +35,33 @@
       "required": [
         "nome"
       ],
-      "title": "Canal",
+      "title": "CanalDenuncia",
       "type": "object"
     },
     "Evidencia": {
       "additionalProperties": false,
-      "description": "Um fato verificado, com fonte e pontos. Os pontos vêm do catálogo, não do coletor.",
+      "description": "Evidência depois da etapa 4, com os dados do catálogo.",
       "properties": {
         "id": {
           "description": "Igual a um id de catalogo/evidencias.yaml",
+          "pattern": "^[a-z0-9_]+$",
           "title": "Id",
           "type": "string"
         },
         "coletor": {
-          "description": "Ex.: 'cnpj', 'listas_mte', 'salario'",
+          "enum": [
+            "cnpj",
+            "listas_mte",
+            "sancoes",
+            "salario",
+            "coerencia",
+            "rota",
+            "contato",
+            "texto",
+            "base_propria"
+          ],
           "title": "Coletor",
           "type": "string"
-        },
-        "direcao": {
-          "enum": [
-            "risco",
-            "confianca"
-          ],
-          "title": "Direcao",
-          "type": "string"
-        },
-        "forca": {
-          "enum": [
-            "forte",
-            "moderada",
-            "fraca"
-          ],
-          "title": "Forca",
-          "type": "string"
-        },
-        "pontos": {
-          "description": "Copiado do catálogo pelo motor",
-          "title": "Pontos",
-          "type": "integer"
         },
         "confianca_coleta": {
           "default": 1.0,
@@ -140,6 +129,33 @@
           "description": "Ex.: 'mediana local R$ 1.680'",
           "title": "Referencia"
         },
+        "direcao": {
+          "enum": [
+            "risco",
+            "confianca"
+          ],
+          "title": "Direcao",
+          "type": "string"
+        },
+        "forca": {
+          "enum": [
+            "forte",
+            "moderada",
+            "fraca"
+          ],
+          "title": "Forca",
+          "type": "string"
+        },
+        "pontos": {
+          "description": "Pontos do catálogo",
+          "title": "Pontos",
+          "type": "integer"
+        },
+        "pontos_aplicados": {
+          "description": "Pontos depois de confianca_coleta e do ajuste de ausência por setor (0 quando neutralizada)",
+          "title": "Pontos Aplicados",
+          "type": "integer"
+        },
         "base_legal": {
           "default": [],
           "items": {
@@ -152,10 +168,11 @@
       "required": [
         "id",
         "coletor",
+        "fonte",
         "direcao",
         "forca",
         "pontos",
-        "fonte"
+        "pontos_aplicados"
       ],
       "title": "Evidencia",
       "type": "object"
@@ -193,7 +210,7 @@
         "canais": {
           "default": [],
           "items": {
-            "$ref": "#/$defs/Canal"
+            "$ref": "#/$defs/CanalDenuncia"
           },
           "title": "Canais",
           "type": "array"
@@ -231,7 +248,24 @@
       "description": "Registro de cada checagem tentada. É a base do cálculo de cobertura.",
       "properties": {
         "coletor": {
+          "enum": [
+            "cnpj",
+            "listas_mte",
+            "sancoes",
+            "salario",
+            "coerencia",
+            "rota",
+            "contato",
+            "texto",
+            "base_propria"
+          ],
           "title": "Coletor",
+          "type": "string"
+        },
+        "verificacao": {
+          "description": "Qual checagem do coletor (ex.: 'cnpj_situacao', 'lista_suja_qsa')",
+          "pattern": "^[a-z0-9_]+$",
+          "title": "Verificacao",
           "type": "string"
         },
         "status": {
@@ -272,6 +306,7 @@
       },
       "required": [
         "coletor",
+        "verificacao",
         "status"
       ],
       "title": "Verificacao",
@@ -296,6 +331,38 @@
     },
     "versao_esquema": {
       "title": "Versao Esquema",
+      "type": "string"
+    },
+    "modelo_ia": {
+      "description": "Ex.: 'qwen3:8b-q4_K_M'",
+      "title": "Modelo Ia",
+      "type": "string"
+    },
+    "origem": {
+      "enum": [
+        "texto",
+        "imagem"
+      ],
+      "title": "Origem",
+      "type": "string"
+    },
+    "canal": {
+      "enum": [
+        "web",
+        "whatsapp"
+      ],
+      "title": "Canal",
+      "type": "string"
+    },
+    "relacao_localidade": {
+      "enum": [
+        "mesmo_municipio",
+        "mesma_regiao_imediata",
+        "outra_regiao_imediata",
+        "nao_se_aplica",
+        "desconhecida"
+      ],
+      "title": "Relacao Localidade",
       "type": "string"
     },
     "pontuacao": {
@@ -331,6 +398,7 @@
     },
     "bonus_combinacao": {
       "default": 0,
+      "maximum": 0,
       "title": "Bonus Combinacao",
       "type": "integer"
     },
@@ -357,6 +425,10 @@
     "criado_em",
     "versao_catalogo",
     "versao_esquema",
+    "modelo_ia",
+    "origem",
+    "canal",
+    "relacao_localidade",
     "pontuacao",
     "faixa",
     "cobertura",

@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "Saída da etapa 2. É a entrada comum de todos os coletores.",
+  "description": "Saída da etapa 2, calculada a partir de EntradaAnalise + ExtracaoOferta.\n\nÉ a entrada comum de todos os coletores.",
   "properties": {
     "cnpj": {
       "anyOf": [
@@ -84,6 +84,7 @@
     "uf_destino": {
       "anyOf": [
         {
+          "pattern": "^[A-Z]{2}$",
           "type": "string"
         },
         {
@@ -104,11 +105,13 @@
         }
       ],
       "default": null,
+      "description": "Copiado de EntradaAnalise.municipio_usuario_ibge",
       "title": "Municipio Origem Ibge"
     },
     "uf_origem": {
       "anyOf": [
         {
+          "pattern": "^[A-Z]{2}$",
           "type": "string"
         },
         {
@@ -168,7 +171,7 @@
         }
       ],
       "default": null,
-      "description": "Só para exibir. Nenhuma regra usa distância em km",
+      "description": "Só para exibir ao usuário. Nenhuma regra usa distância",
       "title": "Distancia Km"
     },
     "outra_uf": {

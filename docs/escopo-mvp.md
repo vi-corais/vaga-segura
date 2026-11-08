@@ -10,8 +10,8 @@
 |Extração|Modelo de linguagem local (Ollama) com saída obrigatória em JSON Schema, cada campo com o trecho de origem|
 |Normalização|Validação de CNPJ, cargo convertido em CBO, municípios no código do IBGE, relação entre o município da pessoa e o da vaga (região imediata do IBGE) e salário mensal|
 |Bases locais|ETL da Lista Suja, CEAC, CEIS/CNEP, Novo CAGED agregado, CBO, IBGE (municípios e regiões imediatas) e salário mínimo (Banco Central)|
-|Coletores|Os 9 da arquitetura: CNPJ + QSA, listas MTE, sanções, salário, coerência, rota, contato, texto e base própria|
-|Base própria|Só o registro de textos e telefones repetidos, sem relatos|
+|Coletores|Os 9 descritos em [contratos.md](arquitetura/contratos.md): CNPJ + QSA, listas MTE, sanções, salário, coerência, rota, contato, texto e base própria|
+|Base própria|Só o registro de textos e contatos (telefones, e-mails e chaves PIX) repetidos, sem relatos|
 |Motor de cálculo|Catálogo YAML, agregador, combinação, ajuste de ausência por setor, tetos, cobertura e faixa|
 |Explicação|Texto em linguagem simples gerado só a partir das evidências, com guardrail|
 |Interface|PWA leve (FastAPI + HTMX), pensada para celular simples|

@@ -3,6 +3,9 @@
 --   * documentos (CNPJ/CPF) guardados só com dígitos
 --   * colunas *_normalizado: minúsculas, sem acento, sem LTDA/ME/EIRELI (feito no ETL, em Python)
 --   * nenhuma tabela guarda o texto original das ofertas (LGPD)
+--   * códigos vindos de cadastros externos (município, CNAE, CBO) não têm FK:
+--     a fonte pode trazer código fora das tabelas de referência, e a carga não
+--     pode falhar por isso. A ligação é lógica e conferida no ETL.
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
@@ -140,6 +143,9 @@ CREATE TABLE mapa_risco (
 );
 
 -- 4. Cache das consultas ao vivo (BrasilAPI, RDAP)
+-- A resposta da BrasilAPI traz o QSA (nomes de sócios, dado público da Receita).
+-- Ela só é usada no cruzamento, nunca é exibida inteira e é apagada ao expirar
+-- (ver a seção 7).
 
 CREATE TABLE cache_consultas (
     fonte        text        NOT NULL,  -- 'brasilapi_cnpj', 'rdap_br'
@@ -170,6 +176,7 @@ CREATE TABLE base_contatos (
     contato_tipo   text NOT NULL CHECK (contato_tipo IN ('telefone', 'pix', 'email')),
     contato_hash   text NOT NULL,  -- HMAC-SHA256 com segredo do servidor
     empresa_hash   text NOT NULL,  -- HMAC do CNPJ ou do nome normalizado; '' se não identificada
+                                   -- (linhas com '' não contam como empresa distinta no coletor base_propria)
     primeiro_visto timestamptz NOT NULL DEFAULT now(),
     ultimo_visto   timestamptz NOT NULL DEFAULT now(),
     ocorrencias    integer     NOT NULL DEFAULT 1,
@@ -178,12 +185,14 @@ CREATE TABLE base_contatos (
 
 -- Perfil do usuário no WhatsApp: só o município, ligado ao HMAC do número.
 -- No site, o perfil fica no navegador e não vem para o banco.
--- Apagado quando a pessoa pede ou depois de 12 meses sem uso.
+-- Apagado quando a pessoa pede ou depois de 12 meses sem uso (ver a seção 7).
 CREATE TABLE perfis_usuario (
     contato_hash   text        PRIMARY KEY,  -- HMAC-SHA256 do número, mesmo segredo de base_contatos
     municipio_ibge char(7)     NOT NULL REFERENCES municipios (codigo_ibge),
-    atualizado_em  timestamptz NOT NULL DEFAULT now()
+    atualizado_em  timestamptz NOT NULL DEFAULT now(),  -- última mudança de município
+    ultimo_uso     timestamptz NOT NULL DEFAULT now()   -- última análise pedida
 );
+CREATE INDEX perfis_usuario_ultimo_uso ON perfis_usuario (ultimo_uso);
 
 -- 6. Auditoria das análises (sem texto, sem trechos, sem dados pessoais)
 
@@ -207,18 +216,33 @@ CREATE TABLE analises (
 );
 CREATE INDEX analises_criada_em ON analises (criada_em);
 
+-- A mesma evidência pode aparecer mais de uma vez na análise (ex.: dois links de phishing)
 CREATE TABLE analise_evidencias (
     analise_id       uuid     NOT NULL REFERENCES analises (id) ON DELETE CASCADE,
+    ordem            smallint NOT NULL,  -- posição na lista de evidências da análise
     evidencia_id     text     NOT NULL,  -- id do catálogo
-    pontos_aplicados smallint NOT NULL,
+    coletor          text     NOT NULL,
+    pontos           smallint NOT NULL,  -- pontos do catálogo
+    pontos_aplicados smallint NOT NULL,  -- depois de confianca_coleta e do ajuste por setor
     confianca_coleta numeric(3,2) NOT NULL,
-    PRIMARY KEY (analise_id, evidencia_id)
+    PRIMARY KEY (analise_id, ordem)
+);
+CREATE INDEX analise_evidencias_id ON analise_evidencias (evidencia_id);
+
+-- Um coletor faz várias checagens (ex.: cnpj_situacao, cnpj_idade), cada uma numa linha
+CREATE TABLE analise_verificacoes (
+    analise_id  uuid    NOT NULL REFERENCES analises (id) ON DELETE CASCADE,
+    coletor     text    NOT NULL,
+    verificacao text    NOT NULL,
+    status      text    NOT NULL CHECK (status IN ('concluida', 'nao_aplicavel', 'falhou', 'sem_dados')),
+    duracao_ms  integer,
+    PRIMARY KEY (analise_id, coletor, verificacao)
 );
 
-CREATE TABLE analise_verificacoes (
-    analise_id uuid    NOT NULL REFERENCES analises (id) ON DELETE CASCADE,
-    coletor    text    NOT NULL,
-    status     text    NOT NULL CHECK (status IN ('concluida', 'nao_aplicavel', 'falhou', 'sem_dados')),
-    duracao_ms integer,
-    PRIMARY KEY (analise_id, coletor)
-);
+-- 7. Retenção (rotina diária do servidor)
+--
+-- DELETE FROM cache_consultas WHERE expira_em < now();
+-- DELETE FROM perfis_usuario  WHERE ultimo_uso < now() - interval '12 months';
+--
+-- A pedido da pessoa (comando "apagar meus dados" no WhatsApp):
+-- DELETE FROM perfis_usuario WHERE contato_hash = $1;

@@ -1,32 +1,32 @@
 """Contrato 1: entrada da análise e saída da extração (etapa 1) e da normalização (etapa 2).
 
-Regra central: todo dado extraído pela IA carrega o trecho do texto original
-que o justifica. Campo sem trecho é descartado na validação.
+Regra central: todo valor informado pela IA carrega o trecho do texto original
+que o justifica. Valor informado sem trecho é recusado pelo esquema, e o pipeline
+descarta o campo cujo trecho não aparece no texto original. Campos com
+"nao_informado" não precisam de trecho.
 """
 
 from __future__ import annotations
 
 from typing import Generic, Literal, Optional, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import Field, model_validator
 
-VERSAO_ESQUEMA = "0.2.0"
+from .base import PADRAO_UF, Base, CanalEntrada, Origem, RelacaoLocalidade
+
+VERSAO_ESQUEMA = "0.3.0"
 
 T = TypeVar("T")
-
-
-class Base(BaseModel):
-    model_config = ConfigDict(extra="forbid")
 
 
 # Entrada
 
 class EntradaAnalise(Base):
-    """O que o usuário envia."""
+    """O que o usuário envia. Também é entrada da normalização (município de origem)."""
 
     texto: str = Field(min_length=20, max_length=10_000, description="Texto da oferta ou texto extraído do print por OCR")
-    origem: Literal["texto", "imagem"] = "texto"
-    canal: Literal["web", "whatsapp"] = "web"
+    origem: Origem = "texto"
+    canal: CanalEntrada = "web"
     municipio_usuario_ibge: Optional[str] = Field(
         None, pattern=r"^\d{7}$", description="Município onde o usuário mora, vindo do perfil (código IBGE)"
     )
@@ -39,6 +39,11 @@ class Campo(Base, Generic[T]):
 
     valor: T
     trecho: str = Field(min_length=1, description="Cópia literal do trecho da oferta")
+
+
+def _exigir_trecho(informado: bool, trecho: Optional[str], nome: str) -> None:
+    if informado and not trecho:
+        raise ValueError(f"{nome}: valor informado sem trecho")
 
 
 class Empresa(Base):
@@ -57,10 +62,16 @@ class Salario(Base):
     periodo: Literal["hora", "dia", "semana", "quinzena", "mes", "producao", "nao_informado"] = "nao_informado"
     trecho: str = Field(min_length=1)
 
+    @model_validator(mode="after")
+    def faixa_coerente(self):
+        if self.valor_min is not None and self.valor_max is not None and self.valor_min > self.valor_max:
+            raise ValueError("salario: valor_min maior que valor_max")
+        return self
+
 
 class LocalTrabalho(Base):
     municipio: Optional[str] = None
-    uf: Optional[str] = Field(None, min_length=2, max_length=2)
+    uf: Optional[str] = Field(None, pattern=PADRAO_UF)
     zona_rural: Optional[bool] = None
     exterior: bool = False
     pais: Optional[str] = None
@@ -94,17 +105,33 @@ class Desconto(Base):
 
 
 class Pagamento(Base):
-    forma: Literal["especie", "pix", "deposito", "producao", "nao_informado"] = "nao_informado"
+    """Forma de pagamento é o meio (dinheiro, PIX); pagamento por produção fica em Salario.periodo."""
+
+    forma: Literal["especie", "pix", "deposito", "nao_informado"] = "nao_informado"
     momento: Literal["diario", "semanal", "quinzenal", "mensal", "ao_fim_do_servico", "nao_informado"] = Field(
         "nao_informado", description="'ao_fim_do_servico' quando só paga ao terminar a safra, a obra ou a empreitada"
     )
     duracao_servico_dias: Optional[int] = Field(None, ge=1, description="Duração prevista do serviço, se informada")
-    trecho: Optional[str] = None
+    trecho: Optional[str] = Field(None, description="Obrigatório quando algum campo for informado")
+
+    @model_validator(mode="after")
+    def trecho_quando_informado(self):
+        informado = (
+            self.forma != "nao_informado" or self.momento != "nao_informado" or self.duracao_servico_dias is not None
+        )
+        _exigir_trecho(informado, self.trecho, "pagamento")
+        return self
 
 
 class Contrato(Base):
     tipo: Literal["clt", "temporario", "pj", "diarista", "informal", "nao_informado"] = "nao_informado"
+    trecho: Optional[str] = Field(None, description="Obrigatório quando o tipo for informado")
     jornada: Optional[Campo[str]] = None
+
+    @model_validator(mode="after")
+    def trecho_quando_informado(self):
+        _exigir_trecho(self.tipo != "nao_informado", self.trecho, "contrato")
+        return self
 
 
 class ChavePix(Base):
@@ -119,6 +146,12 @@ class Contatos(Base):
     links: list[Campo[str]] = []
     chaves_pix: list[ChavePix] = []
     canal_exclusivo: Literal["whatsapp", "telegram", "nenhum", "nao_informado"] = "nao_informado"
+    canal_exclusivo_trecho: Optional[str] = Field(None, description="Obrigatório quando canal_exclusivo for informado")
+
+    @model_validator(mode="after")
+    def trecho_quando_informado(self):
+        _exigir_trecho(self.canal_exclusivo != "nao_informado", self.canal_exclusivo_trecho, "canal_exclusivo")
+        return self
 
 
 class SinalTexto(Base):
@@ -137,7 +170,7 @@ class SinalTexto(Base):
 class ExtracaoOferta(Base):
     """Saída da etapa 1. É este esquema que vai como JSON Schema para o Ollama."""
 
-    versao_esquema: Literal["0.2.0"] = VERSAO_ESQUEMA
+    versao_esquema: Literal[VERSAO_ESQUEMA] = VERSAO_ESQUEMA  # type: ignore[valid-type]
     e_oferta_de_trabalho: bool = Field(description="Falso se o texto não for uma oferta de trabalho")
     empresa: Empresa = Empresa()
     recrutador: Recrutador = Recrutador()
@@ -157,7 +190,10 @@ class ExtracaoOferta(Base):
 # Etapa 2: normalização (regras determinísticas, sem IA)
 
 class Normalizacao(Base):
-    """Saída da etapa 2. É a entrada comum de todos os coletores."""
+    """Saída da etapa 2, calculada a partir de EntradaAnalise + ExtracaoOferta.
+
+    É a entrada comum de todos os coletores.
+    """
 
     # empresa
     cnpj: Optional[str] = Field(None, pattern=r"^\d{14}$", description="Só dígitos")
@@ -170,15 +206,17 @@ class Normalizacao(Base):
 
     # geografia
     municipio_destino_ibge: Optional[str] = Field(None, pattern=r"^\d{7}$")
-    uf_destino: Optional[str] = None
-    municipio_origem_ibge: Optional[str] = Field(None, pattern=r"^\d{7}$")
-    uf_origem: Optional[str] = None
+    uf_destino: Optional[str] = Field(None, pattern=PADRAO_UF)
+    municipio_origem_ibge: Optional[str] = Field(
+        None, pattern=r"^\d{7}$", description="Copiado de EntradaAnalise.municipio_usuario_ibge"
+    )
+    uf_origem: Optional[str] = Field(None, pattern=PADRAO_UF)
     regiao_imediata_origem: Optional[str] = Field(None, pattern=r"^\d{6}$")
     regiao_imediata_destino: Optional[str] = Field(None, pattern=r"^\d{6}$")
-    relacao_localidade: Literal[
-        "mesmo_municipio", "mesma_regiao_imediata", "outra_regiao_imediata", "nao_se_aplica", "desconhecida"
-    ] = Field("desconhecida", description="Pelas regiões geográficas imediatas do IBGE. 'nao_se_aplica' = trabalho remoto")
-    distancia_km: Optional[float] = Field(None, ge=0, description="Só para exibir. Nenhuma regra usa distância em km")
+    relacao_localidade: RelacaoLocalidade = Field(
+        "desconhecida", description="Pelas regiões geográficas imediatas do IBGE. 'nao_se_aplica' = trabalho remoto"
+    )
+    distancia_km: Optional[float] = Field(None, ge=0, description="Só para exibir ao usuário. Nenhuma regra usa distância")
     outra_uf: Optional[bool] = None
 
     # salário

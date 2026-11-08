@@ -1,14 +1,18 @@
 # Catálogo de evidências do Vaga Segura
-# Única fonte de pesos, tetos e base legal. Validado por app/modelos/catalogo.py.
+# Única fonte de pesos, tetos e base legal. Validado por app/modelos/catalogo.py
+# (rode python scripts/validar_catalogo.py depois de qualquer mudança).
 # Pesos iniciais definidos por critério legal; serão recalibrados com o conjunto de teste.
 
-versao: "0.2.0"
+versao: "0.3.0"
 pontuacao_base: 60
 teto_total_confianca: 25
 
 faixas:
   alto_risco_ate: 34  # 0 a 34
   atencao_ate: 64  # 35 a 64; 65 a 100 = sem_sinais_relevantes
+  # Se menos de 40% das verificações aplicáveis forem concluídas e a pontuação
+  # passar de 64, a faixa vira inconclusivo: verificamos pouco para dizer que não
+  # há sinais. Com pontuação até 64, a faixa de risco encontrada é mantida.
   cobertura_minima: 0.4
   inconclusivo_se_pontuacao_acima_de: 64
 
@@ -35,10 +39,10 @@ combinacoes:
       - { id: dispensa_qualificacao,   evidencia: dispensa_requisitos, quando: [vaga_exterior] }  # a alínea b fala de vaga no exterior
       - { id: alojamento_fornecido,    extracao: beneficios.alojamento }
       - { id: pagamento_especie,       evidencia: pagamento_especie }
-      - { id: publico_migrante,        extracao: sinais_texto.publico_migrante }
+      - { id: publico_migrante,        extracao: sinais_texto.publico_migrante }  # só conta aqui; sozinho não pontua, para não penalizar vagas legítimas para migrantes
     bonus:
       - { minimo: 2, pontos: -10 }
-      - { minimo: 3, pontos: -20 }  # não acumula com o anterior
+      - { minimo: 3, pontos: -20 }  # vale só o maior bônus atingido
 
 evidencias:
 
@@ -142,7 +146,7 @@ evidencias:
     direcao: risco
     forca: moderada
     pontos: -25
-    descricao: Mesmo telefone ou chave PIX já apareceu em ofertas de empresas diferentes
+    descricao: Mesmo telefone, e-mail ou chave PIX já apareceu em ofertas de empresas diferentes. Registros sem empresa identificada não contam como empresa distinta
     texto_usuario: "Este mesmo contato já apareceu em ofertas de outras empresas, o que é comum em golpes e aliciamento."
 
   - id: sancao_ceis_cnep
@@ -170,16 +174,6 @@ evidencias:
     aplica_quando: [fora_da_regiao_imediata]
     descricao: Alojamento ou transporte pelo contratante para trabalho fora da região imediata, em outra UF ou no exterior
     texto_usuario: "A oferta leva você para longe de onde mora ({valor_observado}), com transporte ou alojamento por conta do contratante. É o padrão de aliciamento descrito no art. 207 do Código Penal."
-    base_legal: ["CP, art. 207"]
-
-  - id: alojamento_transporte_outra_localidade
-    coletor: rota
-    direcao: risco
-    forca: moderada
-    pontos: -10
-    aplica_quando: [mesma_regiao_imediata]
-    descricao: Alojamento ou transporte pelo contratante para trabalho em outro município da mesma região imediata
-    texto_usuario: "A oferta é em outra cidade ({valor_observado}), com transporte ou alojamento por conta do contratante. Confirme as condições antes de ir."
     base_legal: ["CP, art. 207"]
 
   - id: cnpj_recente
@@ -214,30 +208,6 @@ evidencias:
     descricao: Salário abaixo do mínimo nacional ou do piso estadual (valor-hora quando a jornada é informada, porque jornada parcial pode ter salário proporcional)
     texto_usuario: "O salário ({valor_observado}) está abaixo do mínimo legal ({referencia})."
     base_legal: ["CF, art. 7º, IV", "IN MTP nº 2/2021, Anexo II, 1.10 e 4.17"]
-
-  - id: empregador_nao_identificavel
-    coletor: cnpj
-    direcao: risco
-    forca: moderada
-    pontos: -10
-    descricao: A oferta não permite identificar quem é o empregador
-    texto_usuario: "Não foi possível identificar quem é o empregador. Peça o nome da empresa e o CNPJ."
-
-  - id: destino_setor_alto_risco
-    coletor: rota
-    direcao: risco
-    forca: moderada
-    pontos: -10
-    descricao: Município e setor de destino com histórico de casos no Cadastro de Empregadores
-    texto_usuario: "Já houve casos de trabalho escravo nesse tipo de atividade na região de destino."
-
-  - id: contato_informal_exclusivo
-    coletor: contato
-    direcao: risco
-    forca: moderada
-    pontos: -10
-    descricao: Contato apenas por WhatsApp ou Telegram e e-mail pessoal
-    texto_usuario: "O contato é só por aplicativo de mensagem, sem canal oficial da empresa."
 
   - id: adiantamento_contratacao
     coletor: texto
@@ -285,6 +255,56 @@ evidencias:
     texto_usuario: "A oferta desconta ferramentas ou equipamentos de proteção. Esses itens são obrigação do empregador."
     base_legal: ["IN MTP nº 2/2021, Anexo II, 4.10", "CLT, art. 166"]
 
+  - id: alojamento_transporte_outra_localidade
+    coletor: rota
+    direcao: risco
+    forca: moderada
+    pontos: -10
+    aplica_quando: [mesma_regiao_imediata]
+    descricao: Alojamento ou transporte pelo contratante para trabalho em outro município da mesma região imediata
+    texto_usuario: "A oferta é em outra cidade ({valor_observado}), com transporte ou alojamento por conta do contratante. Confirme as condições antes de ir."
+    base_legal: ["CP, art. 207"]
+
+  - id: empregador_nao_identificavel
+    coletor: cnpj
+    direcao: risco
+    forca: moderada
+    pontos: -10
+    descricao: A oferta não permite identificar quem é o empregador
+    texto_usuario: "Não foi possível identificar quem é o empregador. Peça o nome da empresa e o CNPJ."
+
+  - id: destino_setor_alto_risco
+    coletor: rota
+    direcao: risco
+    forca: moderada
+    pontos: -10
+    descricao: Município e setor de destino com histórico de casos no Cadastro de Empregadores
+    texto_usuario: "Já houve casos de trabalho escravo nesse tipo de atividade na região de destino."
+
+  - id: contato_informal_exclusivo
+    coletor: contato
+    direcao: risco
+    forca: moderada
+    pontos: -10
+    descricao: Contato apenas por WhatsApp ou Telegram e e-mail pessoal
+    texto_usuario: "O contato é só por aplicativo de mensagem, sem canal oficial da empresa."
+
+  - id: dominio_recente
+    coletor: contato
+    direcao: risco
+    forca: moderada
+    pontos: -10
+    descricao: Domínio do site registrado há menos de 30 dias
+    texto_usuario: "O site da empresa foi criado há poucos dias ({valor_observado})."
+
+  - id: pedido_sigilo
+    coletor: texto
+    direcao: risco
+    forca: moderada
+    pontos: -10
+    descricao: A oferta pede que o trabalhador não comente a proposta com ninguém
+    texto_usuario: "A oferta pede segredo sobre a proposta. Desconfie e converse com alguém de confiança antes de aceitar."
+
   # Fracas
   - id: lista_suja_nome_semelhante
     coletor: listas_mte
@@ -294,14 +314,6 @@ evidencias:
     criterio_match: [nome_aproximado]
     descricao: Nome parecido com o de um empregador do cadastro, sem confirmação por documento (regra contra homônimos)
     texto_usuario: "O nome se parece com o de um empregador do cadastro oficial, mas não foi possível confirmar que é a mesma pessoa ou empresa."
-
-  - id: dominio_recente
-    coletor: contato
-    direcao: risco
-    forca: fraca
-    pontos: -10
-    descricao: Domínio do site registrado há menos de 30 dias
-    texto_usuario: "O site da empresa foi criado há poucos dias ({valor_observado})."
 
   - id: sem_presenca_digital
     coletor: contato
@@ -335,6 +347,14 @@ evidencias:
     pontos: -5
     descricao: Dispensa total de experiência, qualificação ou documentos
     texto_usuario: "A oferta não pede nenhuma experiência ou qualificação."
+
+  - id: ganho_garantido
+    coletor: texto
+    direcao: risco
+    forca: fraca
+    pontos: -5
+    descricao: Promessa de ganho garantido ou fixo muito destacado, sem relação com cargo ou jornada
+    texto_usuario: "A oferta promete ganho garantido. Confirme por escrito como e quando o valor será pago."
 
   # Confiança
   - id: cnpj_ativo_antigo

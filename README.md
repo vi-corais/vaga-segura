@@ -2,7 +2,7 @@
 
 Ferramenta de código aberto que cruza dados públicos brasileiros (Receita Federal, Cadastro de Empregadores do MTE, Novo CAGED) com IA local para identificar indícios de aliciamento para trabalho análogo à escravidão em ofertas de emprego.
 
-Projeto em desenvolvimento no programa AI4Good da Brazil Conference 2027.
+Projeto criado para o programa AI4Good da Brazil Conference 2027.
 
 > O Vaga Segura aponta indícios a partir de dados públicos. Ele não acusa empresas nem substitui a fiscalização. Em caso de suspeita, denuncie pelo [Sistema Ipê](https://ipe.sit.trabalho.gov.br/) ou pelo Disque 100.
 
@@ -16,15 +16,43 @@ Projeto em desenvolvimento no programa AI4Good da Brazil Conference 2027.
 
 ![Arquitetura](docs/arquitetura/arquitetura.excalidraw.png)
 
+## Status
+
+O projeto está na fase de especificação. Os contratos entre os módulos, o catálogo de evidências e o esquema do banco estão prontos e são validados por testes. Coletores, motor de cálculo, ETL, API e bot do WhatsApp ainda não foram implementados; o plano está no [escopo do MVP](docs/escopo-mvp.md).
+
 ## Estrutura
 
 ```
 app/modelos/     contratos entre os módulos (Pydantic)
 catalogo/        pesos, tetos e base legal das evidências
-db/              esquema do banco (PostgreSQL)
+db/              esquema do banco (PostgreSQL 15+)
 schemas/         JSON Schemas gerados a partir dos modelos
+scripts/         geração dos schemas e validação do catálogo
+tests/           testes dos contratos e do catálogo
 docs/            documentação do projeto
 ```
+
+## Como rodar
+
+Requer Python 3.10 ou mais novo (o container da aplicação vai usar 3.12).
+
+```bash
+python -m venv .venv
+source .venv/bin/activate          # no Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
+
+python scripts/validar_catalogo.py # confere pesos, tetos e referências do catálogo
+python scripts/gerar_schemas.py    # regrava schemas/ a partir dos modelos
+pytest                             # roda os testes
+```
+
+As variáveis de ambiente previstas estão em `.env.exemplo`.
+
+## Como contribuir
+
+- Mudou um modelo em `app/modelos/`: suba `VERSAO_ESQUEMA` e rode `python scripts/gerar_schemas.py`.
+- Mudou um peso ou uma evidência em `catalogo/evidencias.yaml`: suba `versao` e rode `python scripts/validar_catalogo.py`.
+- O CI (GitHub Actions) roda as duas verificações e os testes em todo push e pull request.
 
 ## Documentação
 

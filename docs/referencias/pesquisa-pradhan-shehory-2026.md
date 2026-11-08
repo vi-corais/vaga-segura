@@ -9,7 +9,7 @@ Revisão de escopo de 21 estudos publicados entre janeiro de 2002 e setembro de 
 ### 1. O sinal no anúncio é fraco por natureza
 *Discussion -> Structural constraints*
 
-Coerção, servidão por dívida e retenção de documentos acontecem dentro da relação de trabalho, depois do recrutamento, então não aparecem nos dados da fase de recrutamento. Como o engano depende de o anúncio parecer lícito, o sinal é fraco. Para os autores, os sinais mais fortes são "irregularidades econômicas dentro de documentos lícitos".
+Coerção, servidão por dívida e retenção de documentos acontecem dentro da relação de trabalho, depois do recrutamento, então não aparecem nos dados da fase de recrutamento. Como o engano depende de o anúncio parecer lícito, o sinal é fraco. Para os autores, os sinais mais fortes são as irregularidades econômicas que aparecem dentro de documentos lícitos.
 
 Foi por isso que decidimos validar a oferta fora do texto. Mas uma empresa real, ativa e com CNPJ regular ainda pode aliciar, e a verificação não pega esse caso.
 
@@ -23,7 +23,7 @@ O artigo observa que setores como construção e trabalho doméstico tendem a fi
 ### 3. Fontes diferentes medem coisas diferentes
 *Discussion -> Methodological implications*
 
-Como cada registro é criado com um propósito, os conjuntos de dados capturam "construtos diferentes" em vez de observações diferentes do mesmo fenômeno.
+Como cada registro é criado com um propósito, cada conjunto de dados capta um construto diferente, e não outra observação do mesmo fenômeno.
 
 Vale para a nossa pontuação: CNPJ ativo, Lista Suja, reputação no Reclame Aqui e presença no LinkedIn medem coisas diferentes. Por isso cada fonte tem um papel no catálogo, umas confirmando legitimidade e outras indicando risco.
 
@@ -37,9 +37,9 @@ O catálogo de evidências segue essa ideia: constar na Lista Suja é um indicad
 ### 5. Falta de gabarito para validar
 *Discussion -> Methodological implications e Way forward*
 
-A ausência de validação contra casos confirmados é apontada como "a lacuna mais persistente" nos estudos da fase de recrutamento. Na prática, a acurácia publicada mede a concordância com um indicador indireto, e não a detecção do tráfico.
+Os autores apontam a falta de validação contra casos confirmados como a lacuna que mais se repete nos estudos da fase de recrutamento. Na prática, a acurácia publicada mede a concordância com um indicador indireto, e não a detecção do tráfico.
 
-Mesmo sem treinar modelo, vamos precisar calibrar os pesos e mostrar que a pontuação funciona, e a banca deve perguntar isso. Nosso plano é testar com casos documentados de resgate e com vagas reais conhecidas.
+Mesmo sem treinar modelo, precisamos calibrar os pesos e mostrar que a pontuação funciona. O plano é testar com casos documentados de resgate e com vagas reais conhecidas, e publicar as métricas.
 
 ### 6. Falsos positivos estigmatizam
 *Discussion -> Socio-technical implications*
@@ -49,7 +49,7 @@ Segundo os autores, falsos positivos podem estigmatizar empresas ou trabalhadore
 ### 7. Apoio à decisão e explicabilidade
 *Way forward*
 
-As ferramentas devem apoiar a decisão humana em vez de detectar de forma autônoma. Modelos baseados em pontuação ganham em transparência, ainda que percam um pouco de acurácia. Como a nossa pontuação é feita de evidências verificáveis, dá para explicar cada ponto dela.
+Os autores recomendam ferramentas de apoio à decisão humana, e não de detecção autônoma. Modelos baseados em pontuação ganham em transparência, ainda que percam um pouco de acurácia. Como a nossa pontuação é feita de evidências verificáveis, dá para explicar cada ponto dela.
 
 ### 8. Fontes externas somem ou mudam
 *Limitations*

@@ -1,6 +1,6 @@
 # Atribuições de dados
 
-O Vaga Segura não redistribui bases de terceiros. O ETL baixa cada base direto da fonte, e o repositório guarda só o código e as tabelas derivadas que nós mesmos calculamos. Mesmo assim, toda tela e todo relatório que usar esses dados deve citar a fonte.
+O Vaga Segura não redistribui bases de terceiros. O ETL baixa cada base direto da fonte e grava no banco local as tabelas, inclusive as derivadas que nós calculamos. O repositório guarda só o código. Mesmo assim, toda tela e todo relatório que usar esses dados deve citar a fonte.
 
 ## Dados públicos oficiais
 
@@ -14,8 +14,10 @@ Publicados por órgãos do governo federal em transparência ativa (Lei 12.527/2
 | CEIS e CNEP | Controladoria-Geral da União | Sanções vigentes | Fonte: CGU, Portal da Transparência. A API exige chave de acesso gratuita |
 | Novo CAGED (microdados) | Ministério do Trabalho e Emprego (PDET) | Salário de admissão por cargo e região, compatibilidade entre CNAE e cargo | Fonte: MTE, Novo CAGED |
 | Classificação Brasileira de Ocupações (CBO) | Ministério do Trabalho e Emprego | Padronização de cargos | Fonte: MTE, CBO |
+| Classificação Nacional de Atividades Econômicas (CNAE 2.3, subclasses) | IBGE (CONCLA) | Atividade da empresa, compatibilidade com o cargo e setores de baixa presença digital | Fonte: IBGE, CONCLA |
 | Localidades (municípios, regiões geográficas imediatas e coordenadas) | IBGE | Municípios de origem e destino e relação entre eles | Fonte: IBGE |
 | Salário mínimo (SGS, série 1619) | Banco Central do Brasil | Comparação com o salário oferecido e limites de desconto | Fonte: Banco Central do Brasil, SGS |
+| Pisos salariais estaduais | Assembleias legislativas dos estados | Comparação com o salário oferecido, quando o piso do estado é maior que o mínimo | Fonte: lei estadual de cada piso, citada na tabela |
 
 ## Infraestrutura e serviços abertos
 
@@ -23,6 +25,6 @@ Publicados por órgãos do governo federal em transparência ativa (Lei 12.527/2
 |---|---|---|
 | RDAP do Registro.br (NIC.br) | Data de registro e titular de domínios .br | Respeitar os limites de consulta do serviço |
 | BrasilAPI | Acesso unificado a CNPJ, CEP, DDD e Registro.br | Código sob licença MIT. Os dados continuam sendo das fontes originais |
-| OpenStreetMap / Nominatim | Verificação de endereço | Dados © colaboradores do OpenStreetMap, licença ODbL. A política de uso do Nominatim limita a 1 requisição por segundo |
-| ViaCEP | Consulta de CEP | Ver os termos de uso do serviço |
+| OpenStreetMap / Nominatim | Verificação de endereço (fora do MVP) | Dados © colaboradores do OpenStreetMap, licença ODbL. A política de uso do Nominatim limita a 1 requisição por segundo |
+| ViaCEP | Consulta de CEP (fora do MVP) | Ver os termos de uso do serviço |
 | Listas públicas de phishing (Phishing.Database, URLhaus) | Checagem de links | Ver a licença de cada lista no repositório de origem |

@@ -5,13 +5,29 @@ O catálogo é a única fonte de pesos, tetos e base legal. O código do motor s
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal, Optional, get_args
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import Field, model_validator
+
+from .base import Base, Coletor
+from .extracao import ExtracaoOferta
+
+CriterioMatch = Literal["cnpj_exato", "cpf_exato", "socio_cpf_exato", "nome_municipio_cpf_parcial", "nome_aproximado"]
 
 
-class Base(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+def caminho_extracao_valido(caminho: str) -> bool:
+    """Confere caminhos como 'beneficios.alojamento': lista da ExtracaoOferta + valor do seu 'tipo'."""
+    lista, _, tipo = caminho.partition(".")
+    campo = ExtracaoOferta.model_fields.get(lista)
+    if campo is None or not tipo:
+        return False
+    args = get_args(campo.annotation)
+    if len(args) != 1:
+        return False
+    campos_item = getattr(args[0], "model_fields", {})
+    if "tipo" not in campos_item:
+        return False
+    return tipo in get_args(campos_item["tipo"].annotation)
 
 
 class Teto(Base):
@@ -21,7 +37,7 @@ class Teto(Base):
 
 class ItemCatalogo(Base):
     id: str = Field(pattern=r"^[a-z0-9_]+$")
-    coletor: str
+    coletor: Coletor
     direcao: Literal["risco", "confianca"]
     forca: Literal["forte", "moderada", "fraca"]
     pontos: int
@@ -31,7 +47,9 @@ class ItemCatalogo(Base):
     teto: Optional[Teto] = None
     neutralizar_em_setores_baixa_presenca: bool = False
     aplica_quando: list[str] = Field([], description="Condições para a evidência poder ser gerada (todas precisam valer)")
-    criterio_match: Optional[list[str]] = Field(None, description="Tipos de cruzamento aceitos (regra contra homônimos)")
+    criterio_match: Optional[list[CriterioMatch]] = Field(
+        None, description="Tipos de cruzamento aceitos (regra contra homônimos)"
+    )
 
     @model_validator(mode="after")
     def sinal_coerente(self):
@@ -47,33 +65,68 @@ class ItemCatalogo(Base):
 class IndicadorCombinacao(Base):
     id: str
     evidencia: Optional[str] = None
-    extracao: Optional[str] = Field(None, description="Caminho na ExtracaoOferta, ex.: 'beneficios.alojamento'")
+    extracao: Optional[str] = Field(
+        None, pattern=r"^[a-z_]+\.[a-z_]+$", description="Lista da ExtracaoOferta + tipo, ex.: 'beneficios.alojamento'"
+    )
     quando: list[str] = Field([], description="Condições para o indicador contar (todas precisam valer)")
 
     @model_validator(mode="after")
     def uma_origem(self):
         if bool(self.evidencia) == bool(self.extracao):
             raise ValueError(f"{self.id}: informe 'evidencia' OU 'extracao'")
+        if self.extracao and not caminho_extracao_valido(self.extracao):
+            raise ValueError(f"{self.id}: caminho de extração inexistente '{self.extracao}'")
         return self
 
 
 class BonusCombinacao(Base):
-    minimo: int = Field(ge=2)
+    minimo: int = Field(ge=2, description="Quantidade mínima de indicadores presentes")
     pontos: int = Field(le=0)
 
 
 class Combinacao(Base):
+    """Bônus por indicadores que aparecem juntos. Vale só o maior bônus atingido (não acumulam)."""
+
     id: str
     base_legal: list[str]
-    indicadores: list[IndicadorCombinacao]
-    bonus: list[BonusCombinacao]
+    indicadores: list[IndicadorCombinacao] = Field(min_length=2)
+    bonus: list[BonusCombinacao] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def bonus_crescentes(self):
+        minimos = [b.minimo for b in self.bonus]
+        pontos = [b.pontos for b in self.bonus]
+        if minimos != sorted(set(minimos)):
+            raise ValueError(f"combinação {self.id}: 'minimo' dos bônus precisa ser crescente e sem repetição")
+        if any(a <= b for a, b in zip(pontos, pontos[1:])):
+            raise ValueError(f"combinação {self.id}: cada bônus precisa ser maior (mais negativo) que o anterior")
+        if minimos[-1] > len(self.indicadores):
+            raise ValueError(f"combinação {self.id}: bônus exige mais indicadores do que existem")
+        ids = [i.id for i in self.indicadores]
+        if len(ids) != len(set(ids)):
+            raise ValueError(f"combinação {self.id}: indicador repetido")
+        return self
 
 
 class Faixas(Base):
-    alto_risco_ate: int
-    atencao_ate: int
+    """Faixas da pontuação (0 a 100).
+
+    0 a alto_risco_ate = alto_risco; até atencao_ate = atencao; acima = sem_sinais_relevantes.
+    Se a cobertura ficar abaixo de cobertura_minima e a pontuação passar de
+    inconclusivo_se_pontuacao_acima_de, a faixa vira inconclusivo: verificamos pouco
+    para dizer que não há sinais. Abaixo desse valor, a faixa de risco é mantida.
+    """
+
+    alto_risco_ate: int = Field(ge=0, le=100)
+    atencao_ate: int = Field(ge=0, le=100)
     cobertura_minima: float = Field(ge=0, le=1)
-    inconclusivo_se_pontuacao_acima_de: int
+    inconclusivo_se_pontuacao_acima_de: int = Field(ge=0, le=100)
+
+    @model_validator(mode="after")
+    def ordem(self):
+        if not self.alto_risco_ate < self.atencao_ate < 100:
+            raise ValueError("faixas: é preciso alto_risco_ate < atencao_ate < 100")
+        return self
 
 
 class Catalogo(Base):
@@ -105,4 +158,8 @@ class Catalogo(Base):
                 for cond in ind.quando:
                     if cond not in self.condicoes:
                         raise ValueError(f"combinação {c.id}: condição não definida '{cond}'")
+        for setor, divisoes in self.setores_baixa_presenca_digital.items():
+            for d in divisoes:
+                if len(d) != 2 or not d.isdigit():
+                    raise ValueError(f"setor {setor}: divisão CNAE inválida '{d}'")
         return self

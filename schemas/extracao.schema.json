@@ -204,6 +204,19 @@
           ],
           "title": "Canal Exclusivo",
           "type": "string"
+        },
+        "canal_exclusivo_trecho": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Obrigatório quando canal_exclusivo for informado",
+          "title": "Canal Exclusivo Trecho"
         }
       },
       "title": "Contatos",
@@ -224,6 +237,19 @@
           ],
           "title": "Tipo",
           "type": "string"
+        },
+        "trecho": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Obrigatório quando o tipo for informado",
+          "title": "Trecho"
         },
         "jornada": {
           "anyOf": [
@@ -347,8 +373,7 @@
         "uf": {
           "anyOf": [
             {
-              "maxLength": 2,
-              "minLength": 2,
+              "pattern": "^[A-Z]{2}$",
               "type": "string"
             },
             {
@@ -412,6 +437,7 @@
     },
     "Pagamento": {
       "additionalProperties": false,
+      "description": "Forma de pagamento é o meio (dinheiro, PIX); pagamento por produção fica em Salario.periodo.",
       "properties": {
         "forma": {
           "default": "nao_informado",
@@ -419,7 +445,6 @@
             "especie",
             "pix",
             "deposito",
-            "producao",
             "nao_informado"
           ],
           "title": "Forma",
@@ -463,6 +488,7 @@
             }
           ],
           "default": null,
+          "description": "Obrigatório quando algum campo for informado",
           "title": "Trecho"
         }
       },
@@ -588,8 +614,8 @@
   "description": "Saída da etapa 1. É este esquema que vai como JSON Schema para o Ollama.",
   "properties": {
     "versao_esquema": {
-      "const": "0.2.0",
-      "default": "0.2.0",
+      "const": "0.3.0",
+      "default": "0.3.0",
       "title": "Versao Esquema",
       "type": "string"
     },
@@ -693,6 +719,7 @@
       "$ref": "#/$defs/Contrato",
       "default": {
         "tipo": "nao_informado",
+        "trecho": null,
         "jornada": null
       }
     },
@@ -703,7 +730,8 @@
         "emails": [],
         "links": [],
         "chaves_pix": [],
-        "canal_exclusivo": "nao_informado"
+        "canal_exclusivo": "nao_informado",
+        "canal_exclusivo_trecho": null
       }
     },
     "sinais_texto": {

@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "O que o usuário envia.",
+  "description": "O que o usuário envia. Também é entrada da normalização (município de origem).",
   "properties": {
     "texto": {
       "description": "Texto da oferta ou texto extraído do print por OCR",
