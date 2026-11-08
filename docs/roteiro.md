@@ -1,12 +1,12 @@
 # Roteiro de evolução
 
-|Fase|Quando|O que entra|
-|---|---|---|
-|1. MVP|Dezembro de 2026|O escopo definido em [escopo-mvp.md](escopo-mvp.md)|
-|2. Alcance|Janeiro a abril de 2027 (até a Brazil Conference)|Transcrição de áudio no WhatsApp, parcerias de distribuição, recalibração com o uso real, integração com o SmartLab (fluxos de origem e destino dos trabalhadores resgatados) e com o novo Radar SIT, quando for lançado|
-|3. Inteligência coletiva|2º semestre de 2027|Relatos colaborativos com níveis de verificação e moderação, padrões de recrutadores recorrentes, calibração estatística (log-odds)|
-|4. Institucional|2028|API e painel com dados agregados e anônimos para MPT, MTE e pesquisadores. Módulo de tráfico internacional (arts. 206 e 149-A do Código Penal) e versões em espanhol e crioulo haitiano para migrantes|
-|5. Escala|Se o PL 1636 for aprovado|Oferecer o motor como implementação aberta do art. 8º, o sistema automatizado de indícios que as plataformas passariam a ser obrigadas a ter. Usar as fontes novas que o projeto cria (API de anúncios do art. 4º e lista de anunciantes notificados do art. 13)|
+|Fase|O que entra|
+|---|---|
+|1. MVP|O escopo definido em [escopo-mvp.md](escopo-mvp.md)|
+|2. Alcance|Transcrição de áudio no WhatsApp, parcerias de distribuição, recalibração com o uso real, integração com o SmartLab (fluxos de origem e destino dos trabalhadores resgatados) e com o novo Radar SIT, quando for lançado|
+|3. Inteligência coletiva|Relatos colaborativos com níveis de verificação e moderação, padrões de recrutadores recorrentes, calibração estatística (log-odds)|
+|4. Institucional|API e painel com dados agregados e anônimos para MPT, MTE e pesquisadores. Módulo de tráfico internacional (arts. 206 e 149-A do Código Penal) e versões em espanhol e crioulo haitiano para migrantes|
+|5. Escala|Depende da aprovação do PL 1636. Oferecer o motor como implementação aberta do art. 8º, o sistema automatizado de indícios que as plataformas passariam a ser obrigadas a ter. Usar as fontes novas que o projeto cria (API de anúncios do art. 4º e lista de anunciantes notificados do art. 13)|
 
 ## Referências
 

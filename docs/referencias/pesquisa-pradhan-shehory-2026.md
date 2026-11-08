@@ -65,10 +65,12 @@ Só 10 dos 59 indicadores do UNODC puderam ser operacionalizados online. Por iss
 
 ## Estudos citados na revisão que podem ser úteis
 
-- Volodko et al. operacionalizaram indicadores para anúncios voltados a migrantes: violações de salário e jornada, descrição vaga da função, redirecionamento para fora da plataforma e benefícios como alojamento, transporte, ida para o país de destino e ajuda para se instalar. A lista é muito parecida com a nossa e pode ser citada como base.
-- Da Silva Santos et al. identificam risco de escravidão moderna em municípios brasileiros a partir de dados socioeconômicos, demográficos e de operações de resgate. Pode servir de camada de contexto regional, por exemplo para uma oferta que leva o trabalhador a um município de alto risco.
+- [Volodko et al. (2020)](https://doi.org/10.1007/s12117-019-09376-5) operacionalizaram indicadores para anúncios voltados a migrantes: violações de salário e jornada, descrição vaga da função, redirecionamento para fora da plataforma e benefícios como alojamento, transporte, ida para o país de destino e ajuda para se instalar. A lista é muito parecida com a nossa e pode ser citada como base.
+- [Da Silva Santos et al. (2019)](https://doi.org/10.1109/ICMLA.2019.00132) identificam risco de escravidão moderna em municípios brasileiros a partir de dados socioeconômicos, demográficos e de operações de resgate. Pode servir de camada de contexto regional, por exemplo para uma oferta que leva o trabalhador a um município de alto risco.
 
 ## Referências
 
 - [Pradhan, R.; Shehory, O. (2026). Online labor trafficking and machine learning: A scoping review and research agenda. PLOS ONE](https://doi.org/10.1371/journal.pone.0358425)
 - [Texto completo no PubMed Central](https://pmc.ncbi.nlm.nih.gov/articles/PMC13606961/)
+- [Volodko, A.; Cockbain, E.; Kleinberg, B. (2020). "Spotting the signs" of trafficking recruitment online: exploring the characteristics of advertisements targeted at migrant job-seekers. Trends in Organized Crime, 23, 7-35](https://doi.org/10.1007/s12117-019-09376-5)
+- [Da Silva Santos, M.; Ladeira, M.; Van Erven, G. C. G.; Silva, G. L. (2019). Machine Learning Models to Identify the Risk of Modern Slavery in Brazilian Cities. 18th IEEE International Conference on Machine Learning and Applications (ICMLA), 740-746](https://doi.org/10.1109/ICMLA.2019.00132)
