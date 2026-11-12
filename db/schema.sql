@@ -158,36 +158,13 @@ CREATE TABLE cache_consultas (
 );
 CREATE INDEX cache_consultas_expira ON cache_consultas (expira_em);
 
--- 5. Base própria (só impressões digitais, nunca o conteúdo)
-
--- Textos parecidos (MinHash)
-CREATE TABLE base_textos (
-    id            bigserial PRIMARY KEY,
-    assinatura    bigint[]    NOT NULL,  -- assinatura MinHash (ex.: 128 valores)
-    bandas_lsh    text[]      NOT NULL,  -- chaves LSH para busca rápida de similares
-    primeiro_visto timestamptz NOT NULL DEFAULT now(),
-    ultimo_visto  timestamptz NOT NULL DEFAULT now(),
-    ocorrencias   integer     NOT NULL DEFAULT 1
-);
-CREATE INDEX base_textos_bandas ON base_textos USING gin (bandas_lsh);
-
--- Contato x empresa (detecta o mesmo contato por trás de "empresas" diferentes)
-CREATE TABLE base_contatos (
-    contato_tipo   text NOT NULL CHECK (contato_tipo IN ('telefone', 'pix', 'email')),
-    contato_hash   text NOT NULL,  -- HMAC-SHA256 com segredo do servidor
-    empresa_hash   text NOT NULL,  -- HMAC do CNPJ ou do nome normalizado; '' se não identificada
-                                   -- (linhas com '' não contam como empresa distinta no coletor base_propria)
-    primeiro_visto timestamptz NOT NULL DEFAULT now(),
-    ultimo_visto   timestamptz NOT NULL DEFAULT now(),
-    ocorrencias    integer     NOT NULL DEFAULT 1,
-    PRIMARY KEY (contato_tipo, contato_hash, empresa_hash)
-);
+-- 5. Perfil do usuário
 
 -- Perfil do usuário no WhatsApp: só o município, ligado ao HMAC do número.
 -- No site, o perfil fica no navegador e não vem para o banco.
 -- Apagado quando a pessoa pede ou depois de 12 meses sem uso (ver a seção 7).
 CREATE TABLE perfis_usuario (
-    contato_hash   text        PRIMARY KEY,  -- HMAC-SHA256 do número, mesmo segredo de base_contatos
+    contato_hash   text        PRIMARY KEY,  -- HMAC-SHA256 do número, com segredo do servidor
     municipio_ibge char(7)     NOT NULL REFERENCES municipios (codigo_ibge),
     atualizado_em  timestamptz NOT NULL DEFAULT now(),  -- última mudança de município
     ultimo_uso     timestamptz NOT NULL DEFAULT now()   -- última análise pedida

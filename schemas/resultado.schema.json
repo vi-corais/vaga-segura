@@ -57,8 +57,7 @@
             "coerencia",
             "rota",
             "contato",
-            "texto",
-            "base_propria"
+            "texto"
           ],
           "title": "Coletor",
           "type": "string"
@@ -256,8 +255,7 @@
             "coerencia",
             "rota",
             "contato",
-            "texto",
-            "base_propria"
+            "texto"
           ],
           "title": "Coletor",
           "type": "string"

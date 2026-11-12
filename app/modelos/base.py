@@ -22,7 +22,7 @@ RelacaoLocalidade = Literal[
     "mesmo_municipio", "mesma_regiao_imediata", "outra_regiao_imediata", "nao_se_aplica", "desconhecida"
 ]
 
-COLETORES = ("cnpj", "listas_mte", "sancoes", "salario", "coerencia", "rota", "contato", "texto", "base_propria")
-Coletor = Literal["cnpj", "listas_mte", "sancoes", "salario", "coerencia", "rota", "contato", "texto", "base_propria"]
+COLETORES = ("cnpj", "listas_mte", "sancoes", "salario", "coerencia", "rota", "contato", "texto")
+Coletor = Literal["cnpj", "listas_mte", "sancoes", "salario", "coerencia", "rota", "contato", "texto"]
 
 Faixa = Literal["alto_risco", "atencao", "sem_sinais_relevantes", "inconclusivo"]

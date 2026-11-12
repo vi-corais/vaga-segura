@@ -72,7 +72,7 @@ Regras:
 - O coletor não decide pontos. Na etapa 4, o motor transforma cada `EvidenciaColetada` em `Evidencia`, com direção, força, pontos e base legal do catálogo, e calcula `pontos_aplicados`.
 - `confianca_coleta` (de 0 a 1) indica a qualidade do dado. Um cruzamento aproximado, por exemplo, entra com valor menor que 1.
 
-Os 9 coletores:
+Os 8 coletores:
 
 | Coletor | No diagrama | O que verifica | Dados |
 |---|---|---|---|
@@ -84,7 +84,6 @@ Os 9 coletores:
 | `rota` | Localidade (IBGE) | Deslocamento com transporte ou alojamento, passagem descontada, destino com histórico de casos | `municipios`, `mapa_risco` |
 | `contato` | Contatos e domínio | Links, domínio, e-mail e DDD | RDAP, listas de phishing, BrasilAPI (DDD) |
 | `texto` | Texto da oferta | Cobranças, descontos, forma e momento do pagamento, sinais de texto | `ExtracaoOferta` |
-| `base_propria` | Base própria | Textos e contatos que se repetem em ofertas de empresas diferentes | `base_textos`, `base_contatos` |
 
 ## Contrato 3: catálogo
 

@@ -10,8 +10,7 @@
 |Extração|Modelo de linguagem local (Ollama) com saída obrigatória em JSON Schema, cada campo com o trecho de origem|
 |Normalização|Validação de CNPJ, cargo convertido em CBO, municípios no código do IBGE, relação entre o município da pessoa e o da vaga (região imediata do IBGE) e salário mensal|
 |Bases locais|ETL da Lista Suja, CEAC, CEIS/CNEP, Novo CAGED agregado, CBO, IBGE (municípios e regiões imediatas) e salário mínimo (Banco Central)|
-|Coletores|Os 9 descritos em [contratos.md](arquitetura/contratos.md): CNPJ + QSA, listas MTE, sanções, salário, coerência, rota, contato, texto e base própria|
-|Base própria|Só o registro de textos e contatos (telefones, e-mails e chaves PIX) repetidos, sem relatos|
+|Coletores|Os 8 descritos em [contratos.md](arquitetura/contratos.md): CNPJ + QSA, listas MTE, sanções, salário, coerência, rota, contato e texto|
 |Motor de cálculo|Catálogo YAML, agregador, combinação, ajuste de ausência por setor, tetos, cobertura e faixa|
 |Explicação|Texto em linguagem simples gerado só a partir das evidências, com guardrail|
 |Interface|PWA leve (FastAPI + HTMX), pensada para celular simples|
@@ -25,6 +24,7 @@
 |Áudio (transcrição)|Depende de outro modelo e aumenta o tempo de resposta. No MVP, o bot pede que a oferta seja enviada em texto ou print|
 |LinkedIn, Indeed, Gupy e Reclame Aqui|Sem API pública aberta e com termos de uso restritivos|
 |SmartLab (rotas de aliciamento)|Não tem download documentado. A integração depende de acesso estável aos dados de origem e destino|
+|Base própria (textos e contatos repetidos)|Guardar telefones, e-mails e chaves PIX que aparecem nas ofertas, mesmo em hash, exige cuidados de segurança e de LGPD que não cabem no MVP, e o sinal só tem valor com volume de uso. Entra depois, se o app crescer, como retroalimentação das próprias análises|
 |Relatos colaborativos|É a parte com mais risco jurídico (dano à imagem, difamação) e precisa de moderação|
 |Painel institucional|Só faz sentido com volume de uso e parceiros definidos|
 |Calibração estatística (log-odds)|Precisa de dados de uso real para ajustar os pesos|

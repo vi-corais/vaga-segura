@@ -95,17 +95,6 @@ erDiagram
         jsonb resposta
         timestamptz expira_em
     }
-    base_textos {
-        bigint id PK
-        bigint_array assinatura "MinHash"
-        int ocorrencias
-    }
-    base_contatos {
-        text contato_tipo PK
-        text contato_hash PK
-        text empresa_hash PK
-        int ocorrencias
-    }
     perfis_usuario {
         text contato_hash PK "HMAC"
         char municipio_ibge FK
@@ -147,18 +136,17 @@ As linhas tracejadas são ligações lógicas, sem chave estrangeira no banco: o
 | Cadastros oficiais | `empregadores_mte` (Lista Suja + CEAC), `sancoes` (CEIS + CNEP) | Mensal | Coletores `listas_mte` e `sancoes` |
 | Derivada da Lista Suja | `mapa_risco` | Mensal | Coletor `rota` |
 | Cache | `cache_consultas` | Sob demanda (TTL) | Coletores `cnpj` e `contato` |
-| Base própria | `base_textos`, `base_contatos` | A cada análise | Coletor `base_propria` |
 | Perfil | `perfis_usuario` | Quando a pessoa informa ou muda a cidade; `ultimo_uso` a cada análise | Normalização (município de origem) |
 | Auditoria | `analises`, `analise_evidencias`, `analise_verificacoes` | A cada análise | Métricas e calibração |
 
 ## Regras de privacidade (LGPD)
 
-- Nenhuma tabela guarda o texto da oferta nem os trechos. A base própria guarda só a assinatura MinHash e HMACs.
+- Nenhuma tabela guarda o texto da oferta, os trechos ou os contatos que aparecem nela (telefones, e-mails e chaves PIX).
 - CPF da Lista Suja: fica em `empregadores_mte.documento` apenas para o cruzamento e nunca é exibido.
 - Auditoria agregada: `analises` registra só a UF de origem e de destino, nunca o município ou o contato.
 - Perfil: `perfis_usuario` guarda só o município, ligado ao HMAC do número. É apagado a pedido da pessoa ou depois de 12 meses sem análises (`ultimo_uso`), por uma rotina diária descrita no fim de `db/schema.sql`.
 - Cache: a resposta da BrasilAPI em `cache_consultas` traz o QSA da Receita, com nomes de sócios. É dado público, usado só no cruzamento com a Lista Suja e o CEAC, nunca exibido inteiro, e apagado quando expira.
-- HMAC com segredo do servidor em `base_contatos`: sem o segredo, não dá para descobrir qual telefone gerou o hash.
+- HMAC com segredo do servidor em `perfis_usuario`: sem o segredo, não dá para descobrir qual número gerou o hash.
 
 ## Regra contra homônimos (coletor `listas_mte`)
 

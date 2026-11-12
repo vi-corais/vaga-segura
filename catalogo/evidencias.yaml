@@ -141,14 +141,6 @@ evidencias:
     texto_usuario: "Este empregador firmou acordo com o governo após fiscalização de trabalho escravo."
     base_legal: ["Portaria Interministerial MTE/MDHC/MIR nº 18/2024"]
 
-  - id: contato_repetido_multiplas_empresas
-    coletor: base_propria
-    direcao: risco
-    forca: moderada
-    pontos: -25
-    descricao: Mesmo telefone, e-mail ou chave PIX já apareceu em ofertas de empresas diferentes. Registros sem empresa identificada não contam como empresa distinta
-    texto_usuario: "Este mesmo contato já apareceu em ofertas de outras empresas, o que é comum em golpes e aliciamento."
-
   - id: sancao_ceis_cnep
     coletor: sancoes
     direcao: risco

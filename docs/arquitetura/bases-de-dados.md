@@ -20,8 +20,6 @@
 |Listas de phishing (Phishing.Database, URLhaus)|Links da mensagem|Link malicioso|Aberto (listas públicas)|
 |BrasilAPI|Interface única para CNPJ, CEP, DDD e Registro.br|Facilita o acesso às fontes públicas|Aberto (API de código aberto)|
 
-Além dessas, existe a base própria do Vaga Segura: textos, telefones, e-mails e chaves PIX que se repetem em ofertas de "empresas" diferentes.
-
 ## Fontes públicas fora do MVP
 
 |Fonte|O que consultar|Sinal gerado|Acesso|
