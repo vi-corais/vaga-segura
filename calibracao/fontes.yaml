@@ -1,0 +1,150 @@
+# Fontes dos casos e padrões de teste do motor. Validado por tests/test_calibracao.py.
+# Nenhuma destas fontes é consultada durante a análise de uma oferta.
+# papel principal: fonte brasileira que mede o motor no contexto real do público.
+# papel apoio: útil, mas de outro contexto ou com um caso só. Nunca é a métrica principal.
+
+fontes:
+
+  # Principais
+
+  - id: sine_bh
+    nome: Vagas ofertadas pelo Sine BH (Prefeitura de Belo Horizonte)
+    responsavel: Prefeitura de Belo Horizonte, Central de Vagas do Sine BH
+    descricao: >-
+      Planilhas trimestrais com as vagas cadastradas e ofertadas pelo Sine BH, com data, CNPJ,
+      ocupação, local de trabalho, número de vagas, experiência, escolaridade e remuneração.
+      São vagas reais, intermediadas por um serviço público, o que dá um rótulo de vaga
+      legítima confiável. Como trazem CNPJ, cargo e salário, testam o motor inteiro (Receita,
+      CAGED e coerência entre atividade e cargo), e não só o texto. Não têm texto livre: a
+      mensagem do caso é montada a partir dos campos, e isso é marcado como sintético.
+    referencias:
+      - "https://dados.pbh.gov.br/dataset/vagas-ofertadas-pbh"
+    idioma: pt
+    camadas: [geral, gravidade]
+    papel: principal
+    usos: [casos_legitimos, falsos_positivos]
+    licenca: Creative Commons Atribuição (CC BY). Citar "Prefeitura de Belo Horizonte, Sine BH".
+    redistribuir: true
+
+  - id: resgates_mte_mpt
+    nome: Comunicados de resgate do MTE e do MPT
+    responsavel: Ministério do Trabalho e Emprego e Ministério Público do Trabalho
+    descricao: >-
+      Notícias oficiais de operações de resgate de trabalhadores em condição análoga à de
+      escravo. Muitas descrevem como as pessoas foram recrutadas: estado de origem, promessa
+      de salário, transporte e alojamento, cobrança da viagem, acordo só verbal. É a principal
+      fonte de padrões da camada de gravidade. Os casos são escritos pela equipe a partir
+      desses padrões, sem nomes de trabalhadores.
+    referencias:
+      - "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo"
+      - "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2025/agosto/mte-resgata-563-trabalhadores-em-situacao-analoga-a-escravidao-em-obra-de-usina-no-mato-grosso"
+      - "https://mpt.mp.br/pgt/noticias"
+    idioma: pt
+    camadas: [gravidade]
+    papel: principal
+    usos: [padroes, casos_de_risco]
+    licenca: Os textos do MTE permitem reprodução gratuita com citação da fonte. Conferir a página de cada notícia do MPT e citar sempre.
+    redistribuir: true
+
+  - id: perfil_resgatado
+    nome: Perfil Resgatado (Repórter Brasil)
+    responsavel: Repórter Brasil, programa Escravo, nem pensar!, a partir de dados do MTE
+    descricao: >-
+      Levantamento que cruza três bases do MTE para mostrar o perfil e os fluxos de origem e
+      destino dos trabalhadores resgatados desde 1995. Serve para conferir se as rotas e os
+      destinos que o coletor rota e o mapa de risco marcam batem com as rotas reais.
+    referencias:
+      - "https://escravonempensar.org.br/wp-content/uploads/2025/05/PerfilResgatado_notatecnica_MA_web.pdf"
+    idioma: pt
+    camadas: [gravidade]
+    papel: principal
+    usos: [rotas]
+    licenca: Publicação protegida pela Lei 9.610/1998. Usar só números agregados, citando a fonte, ou pedir os dados à Repórter Brasil.
+    redistribuir: false
+
+  - id: alertas_golpe_atual
+    nome: Alertas recentes de golpe do falso emprego (Febraban e Procons)
+    responsavel: Federação Brasileira de Bancos e Procons estaduais
+    descricao: >-
+      Alertas públicos sobre os golpes de hoje: falso recrutador, pedido do código que chega
+      por SMS, dados bancários, golpe da tarefa e conta laranja. Cobrem o que as fontes
+      antigas não têm. Os casos são escritos pela equipe a partir dos padrões descritos.
+    referencias:
+      - "https://agenciabrasil.ebc.com.br/geral/noticia/2026-05/febraban-alerta-para-golpe-do-falso-emprego"
+    idioma: pt
+    camadas: [geral]
+    papel: principal
+    usos: [padroes, casos_de_risco]
+    licenca: Alertas públicos. Os casos são sintéticos e citam o alerta de origem na observação.
+    redistribuir: true
+
+  - id: ofertas_doadas
+    nome: Ofertas reais doadas pelo público
+    responsavel: Equipe Vaga Segura, com consentimento de quem recebeu a oferta
+    descricao: >-
+      Mensagens e prints de ofertas que as pessoas receberam e aceitaram compartilhar nas
+      conversas de validação. É o formato exato que o bot vai receber. Antes de registrar,
+      tirar nome, telefone e qualquer dado de quem recebeu. O rótulo (golpe, aliciamento ou
+      legítima) é dado por quem não escreveu as regras do catálogo.
+    referencias:
+      - "interno/tarefas-da-equipe.md (roteiro das conversas)"
+    idioma: pt
+    camadas: [geral, gravidade]
+    papel: principal
+    usos: [casos_de_risco, casos_legitimos]
+    licenca: Uso combinado com cada pessoa. Ficam em calibracao/casos/locais/, fora do repositório.
+    redistribuir: false
+
+  # Apoio
+
+  - id: emscad
+    nome: EMSCAD - Employment Scam Aegean Dataset
+    responsavel: Laboratório de Segurança de Sistemas de Informação e Comunicação, Universidade do Egeu (Grécia)
+    descricao: >-
+      17.880 anúncios reais publicados na plataforma Workable entre 2012 e 2014, dos quais
+      866 foram marcados como fraudulentos pela equipe da plataforma. Em inglês e de outro
+      mercado. Serve para medir falsos positivos das regras de texto e conferir os pesos das
+      evidências de ausência. Não mede os coletores de dados públicos nem a camada de gravidade.
+    referencias:
+      - "Vidros, S.; Kolias, C.; Kambourakis, G.; Akoglu, L. (2017). Automatic Detection of Online Recruitment Frauds: Characteristics, Methods, and a Public Dataset. Future Internet, 9(1), 6. https://doi.org/10.3390/fi9010006"
+      - "http://icsdweb.aegean.gr/emscad"
+    idioma: en
+    camadas: [geral]
+    papel: apoio
+    usos: [falsos_positivos, sinais_estruturais, casos_de_risco]
+    licenca: O artigo não informa licença para os dados. Citar o artigo e não redistribuir os textos.
+    redistribuir: false
+
+  - id: operacao_fake_job
+    nome: Operação Fake Job (PCDF e MPDFT)
+    responsavel: Polícia Civil do Distrito Federal e Promotoria de Justiça de Defesa do Consumidor (Prodecon) do MPDFT
+    descricao: >-
+      Organização que aplicou o golpe do falso emprego em vítimas de todo o país de 2013 a 2016,
+      exigindo curso ou certidão pagos para liberar vagas que não existiam. É um caso só e
+      anterior ao PIX, por isso serve como padrão histórico e para conferir a cobertura do
+      catálogo. Não guardamos nomes de pessoas investigadas.
+    referencias:
+      - "Denúncia da Prodecon/MPDFT, 2 de setembro de 2016 (2ª Vara Criminal de Brasília)"
+      - "https://www.metropoles.com/distrito-federal/justica-distrito-federal/operacao-fake-job-mp-denuncia-sete-por-golpe-contra-desempregados"
+      - "https://www.metropoles.com/distrito-federal/operacao-fake-job-lider-da-organizacao-criminosa-e-preso"
+    idioma: pt
+    camadas: [geral]
+    papel: apoio
+    usos: [padroes, casos_de_risco]
+    licenca: Documento público. Os casos são escritos pela equipe a partir dos padrões, sem copiar trechos de vítimas.
+    redistribuir: true
+
+  - id: equipe
+    nome: Casos escritos pela equipe
+    responsavel: Equipe Vaga Segura
+    descricao: >-
+      Ofertas montadas pela equipe para cobrir situações que as outras fontes não trazem.
+      Sempre marcadas como sintéticas.
+    referencias:
+      - "calibracao/README.md"
+    idioma: pt
+    camadas: [geral, gravidade]
+    papel: apoio
+    usos: [casos_de_risco, casos_legitimos]
+    licenca: Apache 2.0, como o resto do repositório.
+    redistribuir: true

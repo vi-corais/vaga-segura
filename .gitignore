@@ -9,6 +9,8 @@ Claude outputs/
 .trash/
 
 # Dados baixados pelo ETL (cada um baixa direto da fonte)
+# e casos de calibração com texto de terceiros que não pode ser redistribuído
+calibracao/casos/locais/
 dados/
 *.7z
 *.zip

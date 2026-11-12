@@ -1,0 +1,86 @@
+# Casos de exemplo, todos sintéticos. Domínios usam .example para não apontar para sites reais.
+# Formato em app/modelos/calibracao.py; validado por tests/test_calibracao.py.
+
+casos:
+  - id: fake_job_curso_obrigatorio
+    fonte: operacao_fake_job
+    tipo_texto: sintetico
+    rotulo: golpe
+    municipio_pessoa: Maceió/AL
+    texto: >-
+      Olá! Vimos seu currículo e você foi pré-selecionado para a vaga de PORTEIRO, início imediato,
+      salário de R$ 2.300 + VT + VR. Para garantir a vaga é obrigatório o curso de formação,
+      no valor de R$ 150, pago pelo site www.curso-portaria.example. Depois do curso você recebe
+      o encaminhamento para a empresa. Vagas limitadas, faça sua inscrição ainda hoje.
+    observacao: >-
+      Padrão central da Operação Fake Job: curso pago como condição para a vaga, encaminhamento
+      para empresa que não tem vaga e pressa para pagar.
+    esperado:
+      faixas: [sinais_fortes, atencao]
+      alerta_aliciamento: false
+      evidencias: [cobranca_antecipada, urgencia]
+
+  - id: fake_job_certidao_paga
+    fonte: operacao_fake_job
+    tipo_texto: sintetico
+    rotulo: golpe
+    municipio_pessoa: Arapiraca/AL
+    texto: >-
+      Bom dia, aqui é da seleção. Sua vaga de auxiliar de serviços gerais está confirmada, só falta
+      a certidão de antecedentes, que nós mesmos emitimos por R$ 180. Assim que cair o pagamento
+      a gente libera seu cadastro e passa o endereço da empresa. Responda só por aqui no WhatsApp.
+    observacao: >-
+      Variação do mesmo padrão: certidão paga, vaga "confirmada" sem entrevista e contato só
+      pelo WhatsApp.
+    esperado:
+      faixas: [sinais_fortes, atencao]
+      alerta_aliciamento: false
+      evidencias: [cobranca_antecipada]
+
+  - id: legitima_repositor_mercado
+    fonte: equipe
+    tipo_texto: sintetico
+    rotulo: legitima
+    municipio_pessoa: Maceió/AL
+    texto: >-
+      O Mercadinho Exemplo, no bairro do Farol, contrata repositor de mercadorias. Contrato CLT,
+      44 horas semanais, salário de R$ 1.700 + vale-transporte. Envie seu currículo para
+      rh@mercadinho.example até sexta. As etapas são análise do currículo e entrevista na loja.
+    esperado:
+      faixas: [sem_sinais_relevantes, inconclusivo]
+      alerta_aliciamento: false
+      evidencias: [contrato_informado]
+
+  - id: resgate_obra_outra_regiao
+    fonte: resgates_mte_mpt
+    tipo_texto: sintetico
+    rotulo: aliciamento
+    municipio_pessoa: Caxias/MA
+    texto: >-
+      Tô precisando de 30 homens pra obra de usina no Mato Grosso, serviço pra 6 meses. Pago
+      R$ 3.500 por mês, com alojamento e comida no canteiro. A passagem de ônibus a gente adianta
+      e depois desconta do primeiro salário. Não precisa de experiência nem de carteira assinada
+      agora, o acerto é aqui mesmo. Saída na segunda, me chama no zap.
+    observacao: >-
+      Padrões descritos em comunicados de resgate do MTE em 2025: recrutamento no Nordeste para
+      obra em outra região, viagem cobrada do trabalhador e acordo só verbal.
+    esperado:
+      faixas: [sinais_fortes, atencao]
+      alerta_aliciamento: true
+      evidencias: [alojamento_transporte_destino_distante, custo_viagem_descontado]
+
+  - id: alerta_febraban_codigo_sms
+    fonte: alertas_golpe_atual
+    tipo_texto: sintetico
+    rotulo: golpe
+    municipio_pessoa: Maceió/AL
+    texto: >-
+      Parabéns, seu perfil foi aprovado para a vaga de atendente home office, ganhos de R$ 150 a
+      R$ 400 por dia. Para concluir o cadastro, vou te mandar um código por SMS e você me envia
+      aqui, ok? É só para confirmar que o número é seu.
+    observacao: Padrão do alerta da Febraban de maio de 2026 (falso recrutador que pede o código do SMS).
+    esperado:
+      faixas: [sinais_fortes]
+      alerta_aliciamento: false
+      evidencias: [pedido_codigo_ou_senha]
+

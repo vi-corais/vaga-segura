@@ -41,7 +41,7 @@ O catálogo de evidências segue essa ideia: constar na Lista Suja é um indicad
 
 Os autores apontam a falta de validação contra casos confirmados como a lacuna que mais se repete nos estudos da fase de recrutamento. Na prática, a acurácia publicada mede a concordância com um indicador indireto, e não a detecção do tráfico.
 
-Mesmo sem treinar modelo, precisamos calibrar os pesos e mostrar que a pontuação funciona. O plano é testar com casos documentados de resgate, com golpes de falso emprego já noticiados e com vagas reais conhecidas, e publicar as métricas separadas por camada.
+Mesmo sem treinar modelo, precisamos calibrar os pesos e mostrar que a pontuação funciona. O plano é testar com casos documentados de resgate, com golpes de falso emprego já noticiados e com vagas reais conhecidas, e publicar as métricas separadas por camada. As fontes escolhidas e o formato dos casos estão em [`calibracao/`](../../calibracao/README.md).
 
 ### 6. Falsos positivos estigmatizam
 *Discussion -> Socio-technical implications*

@@ -65,6 +65,20 @@ Sem API pública aberta ou com termos de uso restritivos. Ver o motivo em [escop
 |Gupy|Vaga por cargo e empresa|Vaga confirmada no canal oficial|Parcial: API interna sem documentação|
 |Catho / Vagas.com / InfoJobs|Vaga por empresa e data|Vaga confirmada ou texto replicado|A verificar|
 
+## Bases de teste e calibração
+
+Não são consultadas durante a análise. Servem para medir acertos e falsos positivos e para ajustar os pesos do catálogo. Os detalhes, as licenças e o formato dos casos estão em [`calibracao/`](../../calibracao/README.md).
+
+|Fonte|Papel|O que traz|Uso|Limite|
+|---|---|---|---|---|
+|Sine BH (Prefeitura de Belo Horizonte)|Principal|Vagas reais intermediadas pelo Sine, com CNPJ, ocupação, local, remuneração, experiência e escolaridade (CC BY)|Medir falsos positivos do motor inteiro em empresas reais|Só Belo Horizonte e sem texto livre: a mensagem é montada a partir dos campos|
+|Comunicados de resgate do MTE e do MPT|Principal|Como os trabalhadores resgatados foram recrutados: origem, promessas, viagem cobrada, acordo verbal|Padrões e casos da camada de gravidade|Casos escritos pela equipe a partir dos relatos|
+|Perfil Resgatado (Repórter Brasil)|Principal|Fluxos de origem e destino dos resgatados desde 1995, a partir de dados do MTE|Conferir o coletor `rota` e o mapa de risco|Publicação protegida: só números agregados com citação, ou dados pedidos à Repórter Brasil|
+|Alertas da Febraban e dos Procons|Principal|Padrões dos golpes atuais (código do SMS, dados bancários, golpe da tarefa)|Casos da camada geral|Casos sintéticos|
+|Ofertas doadas pelo público|Principal|Mensagens e prints reais, com consentimento|Casos no formato exato do bot|Ficam fora do repositório e sem dados de quem recebeu|
+|EMSCAD (Universidade do Egeu)|Apoio|17.880 anúncios da plataforma Workable (2012 a 2014), 866 fraudulentos|Falsos positivos das regras de texto e pesos das evidências de ausência|Em inglês, de outro mercado, rótulo vindo do comportamento da conta. Licença dos dados não informada|
+|Operação Fake Job (PCDF e MPDFT)|Apoio|Padrões de um golpe do falso emprego de 2013 a 2016|Padrão histórico e cobertura do catálogo|Um caso só, anterior ao PIX|
+
 ## Referências
 
 - [MTE - Cadastro de Empregadores (Lista Suja) e CEAC](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo)
@@ -82,3 +96,8 @@ Sem API pública aberta ou com termos de uso restritivos. Ver o motivo em [escop
 - [Gupy - portal de vagas](https://portal.gupy.io/)
 - [Google Safe Browsing - restrições de uso](https://developers.google.com/safe-browsing/v4/usage-limits)
 - [Consumidor.gov.br](https://www.consumidor.gov.br/)
+- [Prefeitura de Belo Horizonte - Vagas ofertadas pelo Sine BH (dados abertos)](https://dados.pbh.gov.br/dataset/vagas-ofertadas-pbh)
+- [MTE - Notícias de resgates](https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo)
+- [Repórter Brasil - Perfil Resgatado (Maranhão, 2025)](https://escravonempensar.org.br/wp-content/uploads/2025/05/PerfilResgatado_notatecnica_MA_web.pdf)
+- [Vidros et al. (2017), Automatic Detection of Online Recruitment Frauds (EMSCAD), Future Internet](https://doi.org/10.3390/fi9010006)
+- [Metrópoles - Operação Fake Job: MP denuncia sete por golpe contra desempregados (2016)](https://www.metropoles.com/distrito-federal/justica-distrito-federal/operacao-fake-job-mp-denuncia-sete-por-golpe-contra-desempregados)
