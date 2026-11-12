@@ -29,8 +29,8 @@ Infraestrutura da demo: o modelo roda na máquina da equipe e o webhook do Whats
 |Links|Listas públicas de phishing (Phishing.Database, URLhaus) e Google Safe Browsing (Update API, por hash). Links encurtados têm o destino descoberto no servidor, sem abrir a página|
 |Motor de cálculo|Catálogo YAML com as duas camadas, agregador, combinação, ajuste de ausência por setor, tetos, cobertura, faixa, alerta de aliciamento e categorias do problema encontrado|
 |Explicação|Texto em linguagem simples gerado só a partir das evidências, com guardrail. Traz perguntas para fazer ao recrutador, a ação urgente na primeira linha quando houver link, app ou pedido de código ("não clique", "não instale", "não passe o código") e os canais de acordo com o tipo de problema|
-|Interface|PWA leve (FastAPI + HTMX), pensada para celular simples|
-|Calibração|Conjunto de teste com casos de risco das duas camadas e casos legítimos, e as métricas de precisão e falsos positivos|
+|Interface|PWA leve (FastAPI + HTMX), pensada para celular simples, que também pode ser instalada como aplicativo. As telas estão no [protótipo do Figma](https://www.figma.com/design/jJcYmtmqylbC4yp3gjg4xn/Vaga-Segura---Telas-do-aplicativo?node-id=0-1&t=VUD4snbejktUlezt-1)|
+|Calibração|Conjunto de teste em [`calibracao/`](../calibracao/README.md) com casos de risco das duas camadas e casos legítimos (vagas reais do Sine BH, comunicados de resgate do MTE e do MPT, alertas de golpe, ofertas doadas e, como apoio, EMSCAD e Operação Fake Job), e as métricas de precisão e falsos positivos por fonte e por camada|
 |Infraestrutura|Docker Compose com API, Ollama e PostgreSQL, com endereço HTTPS público para o webhook do WhatsApp|
 
 ## O que cada camada verifica no MVP

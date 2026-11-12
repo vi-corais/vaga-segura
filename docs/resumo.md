@@ -10,6 +10,8 @@ A verificação acontece em etapas. Primeiro, confirmamos se a empresa existe e 
 
 Quem usa recebe essa pontuação junto com as evidências explicadas em linguagem simples, perguntas para fazer ao recrutador, orientações de prevenção e os canais de denúncia de acordo com o tipo de problema: banco e MED do PIX e boletim de ocorrência para golpes; Sistema Ipê, MPT Pardal e Disque 100 para suspeita de trabalho escravo. O resultado serve para a pessoa decidir se aceita a proposta; apurar o caso continua sendo papel das autoridades. O projeto dialoga com o tema da Brazil Conference 2027, "O Brasil em primeira pessoa": usa só dados públicos brasileiros, parte de golpes e de um padrão de aliciamento comuns no país e é feito por uma equipe do Nordeste, região de onde vieram 41% das pessoas resgatadas do trabalho escravo em 2025. Alinha-se principalmente à ODS 8, meta 8.7 (erradicação do trabalho forçado e da escravidão moderna), e também à ODS 16, meta 16.2 (tráfico de pessoas), e à ODS 10, pela proteção de quem tem menos acesso à informação.
 
+As telas do aplicativo estão no [protótipo do Figma](https://www.figma.com/design/jJcYmtmqylbC4yp3gjg4xn/Vaga-Segura---Telas-do-aplicativo?node-id=0-1&t=VUD4snbejktUlezt-1).
+
 ## Referências
 
 - [MTE - Combate ao trabalho escravo e Cadastro de Empregadores](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/areas-de-atuacao/combate-ao-trabalho-escravo-e-analogo-ao-de-escravo)

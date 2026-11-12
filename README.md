@@ -21,19 +21,24 @@ Projeto criado para o programa AI4Good da Brazil Conference 2027.
 
 ![Arquitetura](docs/arquitetura/arquitetura.excalidraw.png)
 
+## Protótipo
+
+As telas do aplicativo estão no [protótipo do Figma](https://www.figma.com/design/jJcYmtmqylbC4yp3gjg4xn/Vaga-Segura---Telas-do-aplicativo?node-id=0-1&t=VUD4snbejktUlezt-1): início, primeiro acesso (cidade onde a pessoa mora), verificação em andamento, resultado da análise, detalhe de cada indicador, histórico, canais de ajuda e dicas. O mesmo fluxo vale para o site e para o bot do WhatsApp.
+
 ## Status
 
-O projeto está na fase de especificação. Os contratos entre os módulos, o catálogo de evidências e o esquema do banco estão prontos e são validados por testes, e as telas do aplicativo já estão no [protótipo](docs/prototipo-figma/). Coletores, motor de cálculo, ETL, API e bot do WhatsApp estão em construção, na ordem definida no [escopo do MVP](docs/escopo-mvp.md#ordem-de-entrega).
+O projeto está na fase de especificação. Os contratos entre os módulos, o catálogo de evidências, o esquema do banco e o formato dos casos de calibração estão prontos e são validados por testes, e as telas do aplicativo já estão no [protótipo](https://www.figma.com/design/jJcYmtmqylbC4yp3gjg4xn/Vaga-Segura---Telas-do-aplicativo?node-id=0-1&t=VUD4snbejktUlezt-1). Coletores, motor de cálculo, ETL, API e bot do WhatsApp estão em construção, na ordem definida no [escopo do MVP](docs/escopo-mvp.md#ordem-de-entrega).
 
 ## Estrutura
 
 ```
 app/modelos/     contratos entre os módulos (Pydantic)
 catalogo/        pesos, tetos e base legal das evidências
+calibracao/      fontes e casos de teste para calibrar o motor
 db/              esquema do banco (PostgreSQL 15+)
 schemas/         JSON Schemas gerados a partir dos modelos
 scripts/         geração dos schemas e validação do catálogo
-tests/           testes dos contratos e do catálogo
+tests/           testes dos contratos, do catálogo e dos casos
 docs/            documentação do projeto
 ```
 
@@ -41,10 +46,11 @@ docs/            documentação do projeto
 
 - [Resumo do projeto](docs/resumo.md)
 - [Escopo do MVP](docs/escopo-mvp.md) e [roteiro de evolução](docs/roteiro.md)
-- [Protótipo das telas](docs/prototipo-figma/) (páginas HTML exportadas do Figma)
+- [Protótipo das telas](https://www.figma.com/design/jJcYmtmqylbC4yp3gjg4xn/Vaga-Segura---Telas-do-aplicativo?node-id=0-1&t=VUD4snbejktUlezt-1) (Figma)
 - [Contratos entre os módulos](docs/arquitetura/contratos.md)
 - [Bases de dados consultadas](docs/arquitetura/bases-de-dados.md)
 - [Modelo de dados](docs/arquitetura/modelo-de-dados.md)
+- [Calibração e testes do motor](calibracao/README.md): vagas reais do Sine BH, comunicados de resgate do MTE e do MPT, Perfil Resgatado, alertas de golpe e, como apoio, EMSCAD e Operação Fake Job
 - [Referências jurídicas](docs/referencias/juridico.md) e [pesquisa](docs/referencias/pesquisa-pradhan-shehory-2026.md)
 
 ## Licença

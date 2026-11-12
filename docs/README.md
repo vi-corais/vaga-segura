@@ -10,6 +10,7 @@
 | [arquitetura/modelo-de-dados.md](arquitetura/modelo-de-dados.md) | Tabelas do banco e regras de privacidade |
 | [referencias/juridico.md](referencias/juridico.md) | Leis, normas e o PL 1636/2026 |
 | [referencias/pesquisa-pradhan-shehory-2026.md](referencias/pesquisa-pradhan-shehory-2026.md) | Revisão acadêmica e o que ela significa para o projeto |
-| [prototipo-figma/](prototipo-figma/) | Telas do aplicativo exportadas do Figma, em HTML (abra no navegador) |
+| [Protótipo no Figma](https://www.figma.com/design/jJcYmtmqylbC4yp3gjg4xn/Vaga-Segura---Telas-do-aplicativo?node-id=0-1&t=VUD4snbejktUlezt-1) | Telas do aplicativo |
+| [../calibracao/](../calibracao/README.md) | Fontes e casos de teste do motor (Sine BH, resgates do MTE e do MPT, Perfil Resgatado, alertas de golpe e fontes de apoio) |
 
 O diagrama de arquitetura é editado no Obsidian com o plugin Excalidraw (`arquitetura/arquitetura.excalidraw.md`). A imagem `arquitetura/arquitetura.excalidraw.png` é a versão exportada que aparece no GitHub. Com a exportação automática do plugin ligada, ela se atualiza a cada salvamento.
