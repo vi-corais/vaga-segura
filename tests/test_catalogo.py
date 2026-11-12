@@ -53,7 +53,7 @@ def test_recusa_caminho_extracao_invalido(dados):
 
 def test_recusa_faixas_fora_de_ordem(dados):
     d = copy.deepcopy(dados)
-    d["faixas"]["alto_risco_ate"] = 80
+    d["faixas"]["sinais_fortes_ate"] = 80
     with pytest.raises(ValidationError):
         Catalogo(**d)
 
@@ -86,6 +86,41 @@ def test_recusa_id_repetido(dados):
         Catalogo(**d)
 
 
+def test_recusa_evidencia_sem_camada(dados):
+    d = copy.deepcopy(dados)
+    del d["evidencias"][0]["camada"]
+    with pytest.raises(ValidationError):
+        Catalogo(**d)
+
+
+def test_recusa_ausencia_forte(dados):
+    d = copy.deepcopy(dados)
+    item = next(e for e in d["evidencias"] if e["natureza"] == "ausencia")
+    item["forca"] = "forte"
+    with pytest.raises(ValidationError):
+        Catalogo(**d)
+
+
+def test_recusa_alerta_com_combinacao_inexistente(dados):
+    d = copy.deepcopy(dados)
+    d["alerta_aliciamento"]["combinacoes"] = ["nao_existe"]
+    with pytest.raises(ValidationError):
+        Catalogo(**d)
+
+
+def test_alerta_so_com_combinacao_de_gravidade(dados):
+    d = copy.deepcopy(dados)
+    d["combinacoes"][0]["camada"] = "geral"
+    with pytest.raises(ValidationError):
+        Catalogo(**d)
+
+
+def test_duas_camadas_presentes(dados):
+    """O catálogo cobre golpes em geral e a camada de gravidade."""
+    camadas = {e.camada for e in Catalogo(**dados).evidencias}
+    assert camadas == {"geral", "gravidade", "ambas"}
+
+
 @pytest.mark.parametrize(
     "caminho,esperado",
     [
@@ -98,3 +133,10 @@ def test_recusa_id_repetido(dados):
 )
 def test_caminho_extracao(caminho, esperado):
     assert caminho_extracao_valido(caminho) is esperado
+
+
+def test_indicadores_regionais_nao_ligam_alerta_sozinhos(dados):
+    """Histórico da região não pode, sozinho, tratar a vaga como aliciamento."""
+    catalogo = Catalogo(**dados)
+    regional = next(e for e in catalogo.evidencias if e.id == "destino_setor_alto_risco")
+    assert regional.forca not in catalogo.alerta_aliciamento.forcas

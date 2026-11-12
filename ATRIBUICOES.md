@@ -28,3 +28,5 @@ Publicados por órgãos do governo federal em transparência ativa (Lei 12.527/2
 | OpenStreetMap / Nominatim | Verificação de endereço (fora do MVP) | Dados © colaboradores do OpenStreetMap, licença ODbL. A política de uso do Nominatim limita a 1 requisição por segundo |
 | ViaCEP | Consulta de CEP (fora do MVP) | Ver os termos de uso do serviço |
 | Listas públicas de phishing (Phishing.Database, URLhaus) | Checagem de links | Ver a licença de cada lista no repositório de origem |
+| Google Safe Browsing (Update API) | Checagem de links da camada geral, por hash | Gratuito só para uso não comercial (uso comercial exige o Web Risk). Os avisos baseados nessa lista citam o Google como fonte e dizem que a proteção não é perfeita, como pedem os termos do serviço |
+| Consumidor.gov.br (Senacon) | Reclamações por empresa (fora do MVP, fase 2) | Dados abertos do Ministério da Justiça, com citação da fonte |

@@ -10,5 +10,6 @@
 | [arquitetura/modelo-de-dados.md](arquitetura/modelo-de-dados.md) | Tabelas do banco e regras de privacidade |
 | [referencias/juridico.md](referencias/juridico.md) | Leis, normas e o PL 1636/2026 |
 | [referencias/pesquisa-pradhan-shehory-2026.md](referencias/pesquisa-pradhan-shehory-2026.md) | Revisão acadêmica e o que ela significa para o projeto |
+| [prototipo-figma/](prototipo-figma/) | Telas do aplicativo exportadas do Figma, em HTML (abra no navegador) |
 
 O diagrama de arquitetura é editado no Obsidian com o plugin Excalidraw (`arquitetura/arquitetura.excalidraw.md`). A imagem `arquitetura/arquitetura.excalidraw.png` é a versão exportada que aparece no GitHub. Com a exportação automática do plugin ligada, ela se atualiza a cada salvamento.

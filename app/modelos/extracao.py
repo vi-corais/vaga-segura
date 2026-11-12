@@ -14,7 +14,7 @@ from pydantic import Field, model_validator
 
 from .base import PADRAO_UF, Base, CanalEntrada, Origem, RelacaoLocalidade
 
-VERSAO_ESQUEMA = "0.3.0"
+VERSAO_ESQUEMA = "0.4.0"
 
 T = TypeVar("T")
 
@@ -137,6 +137,9 @@ class Contrato(Base):
 class ChavePix(Base):
     tipo: Literal["cpf", "cnpj", "telefone", "email", "aleatoria", "desconhecido"]
     valor: str
+    finalidade: Literal["cobranca", "pagamento_ao_trabalhador", "desconhecida"] = Field(
+        "desconhecida", description="'cobranca' quando o trabalhador é que precisa pagar para essa chave"
+    )
     trecho: str = Field(min_length=1)
 
 
@@ -163,6 +166,12 @@ class SinalTexto(Base):
         "publico_migrante",  # direcionado a imigrantes ou recém-chegados
         "sigilo",  # "não comente com ninguém"
         "compra_estabelecimento_indicado",  # "as compras são feitas na cantina da fazenda"
+        "tarefa_engajamento",  # "ganhe para curtir vídeos e avaliar produtos"
+        "tarefa_paga_com_deposito",  # "faça um PIX de R$ 100 para liberar as tarefas premium"
+        "pedido_codigo_ou_senha",  # "me passe o código que chegou por SMS", senha, token, acesso ao gov.br
+        "pedido_dados_sensiveis",  # selfie com documento, foto da CNH, dados bancários, assinatura digital
+        "conta_laranja",  # "receber valores na sua conta e repassar", receber encomendas e reenviar
+        "link_instalar_app",  # "baixe nosso aplicativo neste link" (APK ou fora da loja oficial)
     ]
     trecho: str = Field(min_length=1)
 
@@ -226,5 +235,8 @@ class Normalizacao(Base):
     # contatos
     dominios: list[str] = []
     email_pessoal: Optional[bool] = Field(None, description="gmail, hotmail, outlook etc.")
+    links_encurtados: list[str] = Field(
+        [], description="Links de encurtadores conhecidos; o coletor contato segue o redirecionamento sem abrir a página"
+    )
     ddds: list[str] = []
     documentos_pix: list[str] = Field([], description="CPF/CNPJ de chaves PIX, só dígitos")

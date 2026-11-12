@@ -182,8 +182,10 @@ CREATE TABLE analises (
     origem           text        NOT NULL CHECK (origem IN ('texto', 'imagem')),
     canal            text        NOT NULL CHECK (canal IN ('web', 'whatsapp')),
     pontuacao        smallint    NOT NULL CHECK (pontuacao BETWEEN 0 AND 100),
-    faixa            text        NOT NULL CHECK (faixa IN ('alto_risco', 'atencao', 'sem_sinais_relevantes', 'inconclusivo')),
+    faixa            text        NOT NULL CHECK (faixa IN ('sinais_fortes', 'atencao', 'sem_sinais_relevantes', 'inconclusivo')),
     cobertura        numeric(4,3) NOT NULL,
+    alerta_aliciamento boolean   NOT NULL DEFAULT false,  -- camada de gravidade, vale em qualquer faixa
+    categorias       text[]      NOT NULL DEFAULT '{}',   -- categorias das evidências de risco (ex.: tarefa, dinheiro)
     bonus_combinacao smallint    NOT NULL DEFAULT 0,
     tetos_aplicados  text[]      NOT NULL DEFAULT '{}',
     uf_origem        char(2),  -- só UF, nunca município (agregação)
@@ -199,6 +201,7 @@ CREATE TABLE analise_evidencias (
     ordem            smallint NOT NULL,  -- posição na lista de evidências da análise
     evidencia_id     text     NOT NULL,  -- id do catálogo
     coletor          text     NOT NULL,
+    camada           text     NOT NULL CHECK (camada IN ('geral', 'gravidade', 'ambas')),
     pontos           smallint NOT NULL,  -- pontos do catálogo
     pontos_aplicados smallint NOT NULL,  -- depois de confianca_coleta e do ajuste por setor
     confianca_coleta numeric(3,2) NOT NULL,

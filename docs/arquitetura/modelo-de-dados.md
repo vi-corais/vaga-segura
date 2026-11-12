@@ -109,11 +109,14 @@ erDiagram
         smallint pontuacao
         text faixa
         numeric cobertura
+        boolean alerta_aliciamento
+        text_array categorias
     }
     analise_evidencias {
         uuid analise_id PK
         smallint ordem PK
         text evidencia_id
+        text camada "geral, gravidade ou ambas"
         smallint pontos_aplicados
     }
     analise_verificacoes {
@@ -137,11 +140,12 @@ As linhas tracejadas são ligações lógicas, sem chave estrangeira no banco: o
 | Derivada da Lista Suja | `mapa_risco` | Mensal | Coletor `rota` |
 | Cache | `cache_consultas` | Sob demanda (TTL) | Coletores `cnpj` e `contato` |
 | Perfil | `perfis_usuario` | Quando a pessoa informa ou muda a cidade; `ultimo_uso` a cada análise | Normalização (município de origem) |
-| Auditoria | `analises`, `analise_evidencias`, `analise_verificacoes` | A cada análise | Métricas e calibração |
+| Auditoria | `analises`, `analise_evidencias`, `analise_verificacoes` | A cada análise | Métricas e calibração, separadas por camada (`analise_evidencias.camada`) e pelo alerta de aliciamento |
 
 ## Regras de privacidade (LGPD)
 
 - Nenhuma tabela guarda o texto da oferta, os trechos ou os contatos que aparecem nela (telefones, e-mails e chaves PIX).
+- Os sinais de golpe (pedido de código, de senha ou de dados sensíveis) viram só o id da evidência. O código, a senha ou o dado pedido nunca são guardados, nem em `analise_evidencias`.
 - CPF da Lista Suja: fica em `empregadores_mte.documento` apenas para o cruzamento e nunca é exibido.
 - Auditoria agregada: `analises` registra só a UF de origem e de destino, nunca o município ou o contato.
 - Perfil: `perfis_usuario` guarda só o município, ligado ao HMAC do número. É apagado a pedido da pessoa ou depois de 12 meses sem análises (`ultimo_uso`), por uma rotina diária descrita no fim de `db/schema.sql`.

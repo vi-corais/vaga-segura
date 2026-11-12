@@ -1,40 +1,60 @@
 # Bases de dados
 
+As fontes estão separadas pela camada em que mais pesam. A camada geral cobre golpes de falso emprego em qualquer vaga; a camada de gravidade cobre o aliciamento para trabalho análogo à escravidão. Algumas fontes servem às duas.
+
 ## Fontes usadas no MVP
+
+### Camada geral
 
 |Fonte|O que consultar|Sinal gerado|Acesso|
 |---|---|---|---|
 |CNPJ (Receita Federal)|Situação, data de abertura, CNAE, porte, capital social, endereço|Empresa recente, inativa, sem porte para a vaga ou com CNAE incoerente|Aberto (dados abertos)|
-|QSA (Receita Federal)|Sócios do CNPJ|Sócio que consta na Lista Suja ou no CEAC|Aberto (dados abertos)|
-|Lista Suja (MTE)|CNPJ, CPF, nome, município, CNAE|Empregador responsabilizado por trabalho escravo|Aberto (.txt e .xlsx)|
-|CEAC (MTE)|CNPJ, CPF, nome|Empregador com termo de ajustamento de conduta (TAC)|Aberto (.xlsx)|
 |CEIS / CNEP (CGU)|CNPJ, CPF|Empresa inidônea, suspensa ou punida|Aberto (API do Portal da Transparência)|
-|Novo CAGED (MTE)|Salário de admissão por cargo (CBO) e município|Salário muito acima ou abaixo do padrão local|Aberto (microdados)|
 |Tabela CBO (MTE)|Código do cargo|Padroniza o cargo e permite cruzar com o CNAE|Aberto (download)|
 |CNAE (IBGE/CONCLA)|Subclasse, divisão e seção da atividade econômica|Permite cruzar a atividade da empresa com o cargo e identificar setores de baixa presença digital|Aberto (download e API do IBGE)|
-|Salário mínimo (Banco Central, SGS série 1619) e pisos estaduais|Valor vigente do mínimo nacional, fixado por decreto, e pisos das leis estaduais|Oferta abaixo do mínimo e descontos de moradia e alimentação acima do limite legal|Aberto (API do SGS). Os pisos estaduais vêm das leis de cada estado, numa tabela mantida por nós|
-|Mapa de risco (derivado da Lista Suja)|Setor + município de destino|Região e setor com histórico de casos no Cadastro de Empregadores|Gerado por nós|
-|IBGE Localidades|Municípios de origem e destino e a região geográfica imediata de cada um|Vaga fora do município ou fora da região imediata|Aberto (API)|
 |Registro.br (RDAP)|Data de registro e CNPJ do titular do domínio .br|Site recém-criado ou titular diferente da empresa|Aberto (API)|
 |Tabela de DDD (BrasilAPI)|DDD do telefone|DDD sem relação com a empresa ou com a vaga|Aberto (API)|
-|Listas de phishing (Phishing.Database, URLhaus)|Links da mensagem|Link malicioso|Aberto (listas públicas)|
+|Listas de phishing (Phishing.Database, URLhaus)|Links da mensagem e o destino dos links encurtados|Link malicioso|Aberto (listas públicas)|
+|Google Safe Browsing (Update API)|Hash dos links da mensagem, conferido numa cópia local das listas|Link malicioso (phishing ou malware)|Gratuito só para uso não comercial; uso comercial exige o Web Risk|
+|Expansão de links encurtados|Destino real de bit.ly, encurtador.com.br e similares, seguindo o redirecionamento no servidor sem abrir a página|Link encurtado ou que leva a outro domínio|Requisição HTTP do próprio servidor|
+|Chaves PIX (regra local)|Formato e tipo da chave (CPF, CNPJ, e-mail, telefone, aleatória) e o documento da chave|Cobrança para CPF ou para CNPJ diferente da empresa|Regra local. O diretório do PIX (DICT) não é público|
 |BrasilAPI|Interface única para CNPJ, CEP, DDD e Registro.br|Facilita o acesso às fontes públicas|Aberto (API de código aberto)|
 
-## Fontes públicas fora do MVP
+### Camada de gravidade
 
 |Fonte|O que consultar|Sinal gerado|Acesso|
 |---|---|---|---|
-|SmartLab - Observatório da Erradicação do Trabalho Escravo (MPT/OIT)|Município de origem e de destino, setor econômico|Rota da oferta coincide com um fluxo histórico de aliciamento|Parcial: site aberto, mas sem download documentado. O site usa uma API interna sem documentação pública|
-|Radar SIT (MTE)|Resgates por município e por atividade|Região e setor com histórico de resgates|Indisponível: fora do ar, com nova versão em construção, segundo comunicado da SIT|
-|GLEIF (LEI)|Registro global de entidades legais|Confirma empresas de médio e grande porte|Aberto (API)|
-|Google News (RSS)|Nome da empresa e dos sócios + termos de risco|Menção a resgate ou golpe|Aberto (RSS)|
-|Internet Archive|Histórico do site e do LinkedIn|Site ou perfil que surgiu junto com a vaga|Aberto (API)|
-|Certificate Transparency (crt.sh)|Histórico de certificados do site|Domínio recém-ativado|Aberto (API)|
-|ViaCEP / OpenStreetMap|Endereço da vaga e do CNPJ|Endereço inexistente ou divergente|Aberto (API)|
+|QSA (Receita Federal)|Sócios do CNPJ|Sócio que consta na Lista Suja ou no CEAC|Aberto (dados abertos)|
+|Lista Suja (MTE)|CNPJ, CPF, nome, município, CNAE|Empregador responsabilizado por trabalho escravo|Aberto (.txt e .xlsx)|
+|CEAC (MTE)|CNPJ, CPF, nome|Empregador com termo de ajustamento de conduta (TAC)|Aberto (.xlsx)|
+|Mapa de risco (derivado da Lista Suja)|Setor + município de destino|Região e setor com histórico de casos no Cadastro de Empregadores|Gerado por nós|
+|IBGE Localidades|Municípios de origem e destino e a região geográfica imediata de cada um|Vaga fora do município ou fora da região imediata|Aberto (API)|
+
+### As duas camadas
+
+|Fonte|O que consultar|Sinal gerado|Acesso|
+|---|---|---|---|
+|Novo CAGED (MTE)|Salário de admissão por cargo (CBO) e município|Salário muito acima ou abaixo do padrão local|Aberto (microdados)|
+|Salário mínimo (Banco Central, SGS série 1619) e pisos estaduais|Valor vigente do mínimo nacional, fixado por decreto, e pisos das leis estaduais|Oferta abaixo do mínimo e descontos de moradia e alimentação acima do limite legal|Aberto (API do SGS). Os pisos estaduais vêm das leis de cada estado, numa tabela mantida por nós|
+
+## Fontes públicas fora do MVP
+
+|Fonte|Camada|O que consultar|Sinal gerado|Acesso|
+|---|---|---|---|---|
+|SmartLab - Observatório da Erradicação do Trabalho Escravo (MPT/OIT)|Gravidade|Município de origem e de destino, setor econômico|Rota da oferta coincide com um fluxo histórico de aliciamento|Parcial: site aberto, mas sem download documentado. O site usa uma API interna sem documentação pública|
+|Radar SIT (MTE)|Gravidade|Resgates por município e por atividade|Região e setor com histórico de resgates|Indisponível: fora do ar, com nova versão em construção, segundo comunicado da SIT|
+|DNS do domínio (MX, SPF, DMARC)|Geral|Registros de e-mail do domínio citado|Domínio que não recebe e-mail ou é fácil de falsificar|Aberto (fase 2)|
+|Consumidor.gov.br (Senacon)|Geral|Reclamações finalizadas por empresa, com CNPJ|Empresa com reclamações de cobrança indevida ou fraude|Aberto (dados abertos, fase 2). Alternativa legal ao Reclame Aqui|
+|Lista de marcas imitadas|Geral|Nome, CNPJ raiz e domínios oficiais das marcas mais usadas em golpes|Oferta em nome de uma marca, com domínio, e-mail ou CNPJ que não são dela; domínio parecido com o oficial|Gerada por nós (fase 3). Como a base própria, depende de volume de uso e de revisão humana para não acusar revendedoras e terceirizadas|
+|GLEIF (LEI)|Geral|Registro global de entidades legais|Confirma empresas de médio e grande porte|Aberto (API)|
+|Google News (RSS)|Ambas|Nome da empresa e dos sócios + termos de risco|Menção a resgate ou golpe|Aberto (RSS)|
+|Internet Archive|Geral|Histórico do site e do LinkedIn|Site ou perfil que surgiu junto com a vaga|Aberto (API)|
+|Certificate Transparency (crt.sh)|Geral|Histórico de certificados do site|Domínio recém-ativado|Aberto (API)|
+|ViaCEP / OpenStreetMap|Geral|Endereço da vaga e do CNPJ|Endereço inexistente ou divergente|Aberto (API)|
 
 ## Plataformas privadas (fora do MVP)
 
-Sem API pública aberta ou com termos de uso restritivos. Ver o motivo em [escopo-mvp.md](../escopo-mvp.md).
+Sem API pública aberta ou com termos de uso restritivos. Ver o motivo em [escopo-mvp.md](../escopo-mvp.md). Na camada geral, Reclame Aqui e LinkedIn teriam peso maior do que na de gravidade, porque é neles que aparecem as queixas de vaga falsa, mas o problema dos termos de uso continua. A extensão de navegador da fase 2 lê só a página que a pessoa já abriu, sem raspar essas plataformas.
 
 |Fonte|O que consultar|Sinal gerado|Acesso|
 |---|---|---|---|
@@ -60,3 +80,5 @@ Sem API pública aberta ou com termos de uso restritivos. Ver o motivo em [escop
 - [SmartLab no GitHub (código do site e da API)](https://github.com/smartlab-br)
 - [Radar SIT - comunicado da Secretaria de Inspeção do Trabalho](https://sit.trabalho.gov.br/radar/)
 - [Gupy - portal de vagas](https://portal.gupy.io/)
+- [Google Safe Browsing - restrições de uso](https://developers.google.com/safe-browsing/v4/usage-limits)
+- [Consumidor.gov.br](https://www.consumidor.gov.br/)

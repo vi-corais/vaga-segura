@@ -2,19 +2,34 @@
 # Única fonte de pesos, tetos e base legal. Validado por app/modelos/catalogo.py
 # (rode python scripts/validar_catalogo.py depois de qualquer mudança).
 # Pesos iniciais definidos por critério legal; serão recalibrados com o conjunto de teste.
+#
+# Duas camadas no mesmo catálogo e na mesma pontuação:
+#   camada geral     = golpes de falso emprego em qualquer vaga (dinheiro, dados, links, tarefa)
+#   camada gravidade = aliciamento para trabalho análogo à escravidão (Lista Suja, rota, dívida)
+#   camada ambas     = serve aos dois riscos (ex.: cobrança antecipada, documentos originais)
+# A camada gravidade também liga o marcador alerta_aliciamento (ver abaixo).
+# natureza: presenca, contradicao ou ausencia. Ausência nunca é forte: a falta de um
+# dado pesa menos que uma contradição.
 
-versao: "0.3.0"
+versao: "0.4.1"
 pontuacao_base: 60
 teto_total_confianca: 25
 
 faixas:
-  alto_risco_ate: 34  # 0 a 34
+  sinais_fortes_ate: 34  # 0 a 34
   atencao_ate: 64  # 35 a 64; 65 a 100 = sem_sinais_relevantes
   # Se menos de 40% das verificações aplicáveis forem concluídas e a pontuação
   # passar de 64, a faixa vira inconclusivo: verificamos pouco para dizer que não
   # há sinais. Com pontuação até 64, a faixa de risco encontrada é mantida.
   cobertura_minima: 0.4
   inconclusivo_se_pontuacao_acima_de: 64
+
+# Liga em qualquer faixa quando uma evidência de risco da camada gravidade com uma
+# destas forças é aplicada, ou quando uma destas combinações atinge um bônus.
+# Troca a mensagem e acrescenta os canais da camada de gravidade (Sistema Ipê, Disque 100).
+alerta_aliciamento:
+  forcas: [forte, moderada]
+  combinacoes: [indicios_aliciamento_pl_1636]
 
 condicoes:
   # relacao_localidade vem das regiões geográficas imediatas do IBGE (ver docs/arquitetura/contratos.md)
@@ -33,6 +48,7 @@ setores_baixa_presenca_digital:
 
 combinacoes:
   - id: indicios_aliciamento_pl_1636
+    camada: gravidade
     base_legal: ["PL 1636/2026, art. 2º, IV"]
     indicadores:
       - { id: salario_desproporcional, evidencia: salario_acima_p90 }
@@ -50,6 +66,9 @@ evidencias:
   - id: lista_suja_documento
     coletor: listas_mte
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: listas_oficiais
     forca: forte
     pontos: -60
     teto: { valor: 10 }
@@ -61,15 +80,21 @@ evidencias:
   - id: link_phishing
     coletor: contato
     direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: contato_e_links
     forca: forte
     pontos: -40
     teto: { valor: 20 }
-    descricao: Link da mensagem consta em lista pública de sites maliciosos
+    descricao: Link da mensagem (ou o destino de um link encurtado) consta em lista pública de sites maliciosos (Phishing.Database, URLhaus, Google Safe Browsing)
     texto_usuario: "Um link desta mensagem aparece em listas de sites usados para golpes. Não clique."
 
   - id: cnpj_inexistente_ou_invalido
     coletor: cnpj
     direcao: risco
+    camada: geral
+    natureza: contradicao
+    categoria: empresa
     forca: forte
     pontos: -40
     descricao: CNPJ com dígitos inválidos ou não encontrado na Receita Federal
@@ -79,6 +104,9 @@ evidencias:
   - id: cnpj_inativo
     coletor: cnpj
     direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: empresa
     forca: forte
     pontos: -35
     descricao: CNPJ baixado, inapto, suspenso ou nulo
@@ -87,6 +115,9 @@ evidencias:
   - id: cobranca_antecipada
     coletor: texto
     direcao: risco
+    camada: ambas
+    natureza: presenca
+    categoria: dinheiro
     forca: forte
     pontos: -35
     teto: { valor: 25, quando: [fora_do_municipio] }
@@ -97,6 +128,9 @@ evidencias:
   - id: dominio_titular_divergente
     coletor: contato
     direcao: risco
+    camada: geral
+    natureza: contradicao
+    categoria: contato_e_links
     forca: forte
     pontos: -30
     descricao: O site citado pertence a outro CNPJ, diferente do informado na vaga
@@ -106,6 +140,9 @@ evidencias:
   - id: pagamento_especie
     coletor: texto
     direcao: risco
+    camada: ambas
+    natureza: presenca
+    categoria: condicoes_trabalho
     forca: forte
     pontos: -25
     descricao: Pagamento somente em dinheiro vivo
@@ -115,6 +152,9 @@ evidencias:
   - id: pedido_documentos_originais
     coletor: texto
     direcao: risco
+    camada: ambas
+    natureza: presenca
+    categoria: dados_pessoais
     forca: forte
     pontos: -25
     descricao: Pede que o trabalhador entregue documentos originais (RG, carteira de trabalho)
@@ -124,16 +164,86 @@ evidencias:
   - id: compra_estabelecimento_indicado
     coletor: texto
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: condicoes_trabalho
     forca: forte
     pontos: -25
     descricao: A oferta indica ou obriga onde o trabalhador deve fazer compras (cantina, armazém, mercado do patrão)
     texto_usuario: "A oferta diz onde você deve fazer suas compras. Comprar fiado no lugar indicado pelo patrão é uma forma conhecida de prender o trabalhador por dívida."
     base_legal: ["CP, art. 203, §1º, I", "IN MTP nº 2/2021, Anexo II, 4.9"]
 
+  - id: pedido_codigo_ou_senha
+    coletor: texto
+    direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: dados_pessoais
+    forca: forte
+    pontos: -40
+    teto: { valor: 20 }
+    descricao: Pede código recebido por SMS ou WhatsApp, senha, token bancário ou acesso à conta gov.br
+    texto_usuario: "A oferta pede um código ou uma senha: \"{valor_observado}\". Nenhuma empresa precisa disso para contratar. Não passe o código para ninguém."
+    base_legal: ["CP, art. 171, §2º-A (fraude eletrônica)"]
+
+  - id: tarefa_paga_com_deposito
+    coletor: texto
+    direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: tarefa
+    forca: forte
+    pontos: -35
+    teto: { valor: 20 }
+    descricao: "Golpe da tarefa: pede depósito, PIX ou \"investimento\" para liberar tarefas, subir de nível ou sacar comissão"
+    texto_usuario: "A oferta pede que você deposite dinheiro para liberar tarefas ou ganhos. Trabalho de verdade paga você, e não o contrário."
+    base_legal: ["CP, art. 171"]
+
+  - id: conta_laranja
+    coletor: texto
+    direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: dinheiro
+    forca: forte
+    pontos: -35
+    teto: { valor: 25 }
+    descricao: Pede que o trabalhador receba dinheiro ou encomendas na própria conta ou casa e repasse para outra pessoa
+    texto_usuario: "A oferta pede que você receba dinheiro ou encomendas e repasse. Isso costuma ser usado para lavar dinheiro de golpes, e quem empresta a conta pode responder junto."
+    base_legal: ["CP, art. 171"]
+
+  - id: link_instalar_app
+    coletor: texto
+    direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: contato_e_links
+    forca: forte
+    pontos: -30
+    teto: { valor: 25 }
+    descricao: Pede que o trabalhador instale um aplicativo por link (APK ou fora da loja oficial)
+    texto_usuario: "A oferta pede que você instale um aplicativo por um link. Apps fora da loja oficial são usados para roubar dados e até o reconhecimento do seu rosto. Não instale."
+    base_legal: ["CP, art. 171, §2º-A (fraude eletrônica)"]
+
+  - id: pedido_dados_sensiveis
+    coletor: texto
+    direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: dados_pessoais
+    forca: forte
+    pontos: -25
+    descricao: Pede selfie com documento, foto de documentos, dados bancários ou assinatura digital antes do contrato
+    texto_usuario: "A oferta pede dados que só fazem sentido depois do contrato assinado: \"{valor_observado}\". Esses dados podem ser usados para abrir contas e pegar empréstimos no seu nome."
+    base_legal: ["CP, art. 171, §2º-A (fraude eletrônica)", "LGPD, art. 6º, III"]
+
   # Moderadas
   - id: ceac_documento
     coletor: listas_mte
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: listas_oficiais
     forca: moderada
     pontos: -25
     criterio_match: [cnpj_exato, cpf_exato, socio_cpf_exato, nome_municipio_cpf_parcial]
@@ -144,6 +254,9 @@ evidencias:
   - id: sancao_ceis_cnep
     coletor: sancoes
     direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: listas_oficiais
     forca: moderada
     pontos: -20
     descricao: Empresa com sanção vigente no CEIS ou CNEP (CGU)
@@ -152,6 +265,9 @@ evidencias:
   - id: salario_acima_p90
     coletor: salario
     direcao: risco
+    camada: ambas
+    natureza: presenca
+    categoria: condicoes_trabalho
     forca: moderada
     pontos: -20
     descricao: Salário acima do P90 do CAGED, ou mais de 2x a mediana, para o cargo e região
@@ -161,6 +277,9 @@ evidencias:
   - id: alojamento_transporte_destino_distante
     coletor: rota
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: deslocamento
     forca: moderada
     pontos: -20
     aplica_quando: [fora_da_regiao_imediata]
@@ -171,6 +290,9 @@ evidencias:
   - id: cnpj_recente
     coletor: cnpj
     direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: empresa
     forca: moderada
     pontos: -15
     descricao: CNPJ aberto há menos de 90 dias
@@ -179,6 +301,9 @@ evidencias:
   - id: cnae_incompativel_cbo
     coletor: coerencia
     direcao: risco
+    camada: geral
+    natureza: contradicao
+    categoria: empresa
     forca: moderada
     pontos: -15
     descricao: A atividade registrada da empresa não costuma contratar o cargo oferecido
@@ -187,6 +312,9 @@ evidencias:
   - id: porte_incompativel
     coletor: coerencia
     direcao: risco
+    camada: geral
+    natureza: contradicao
+    categoria: empresa
     forca: moderada
     pontos: -15
     descricao: Porte ou capital social incompatível com o número de vagas ou benefícios
@@ -195,6 +323,9 @@ evidencias:
   - id: salario_abaixo_minimo
     coletor: salario
     direcao: risco
+    camada: ambas
+    natureza: presenca
+    categoria: condicoes_trabalho
     forca: moderada
     pontos: -15
     descricao: Salário abaixo do mínimo nacional ou do piso estadual (valor-hora quando a jornada é informada, porque jornada parcial pode ter salário proporcional)
@@ -204,6 +335,9 @@ evidencias:
   - id: adiantamento_contratacao
     coletor: texto
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: condicoes_trabalho
     forca: moderada
     pontos: -15
     descricao: Adiantamento em dinheiro ou em espécie oferecido na contratação
@@ -213,6 +347,9 @@ evidencias:
   - id: pagamento_ao_fim_do_servico
     coletor: texto
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: condicoes_trabalho
     forca: moderada
     pontos: -15
     descricao: Pagamento só ao fim de um serviço com mais de 30 dias (safra, obra, empreitada). Se a duração não for informada, entra com confianca_coleta 0,5
@@ -222,6 +359,9 @@ evidencias:
   - id: desconto_moradia_alimentacao_acima_limite
     coletor: salario
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: condicoes_trabalho
     forca: moderada
     pontos: -15
     descricao: Desconto de moradia ou alimentação acima do limite legal (urbano, CLT art. 458, §3º; rural, Lei 5.889/1973, art. 9º). Sem valor informado, a verificação fica como sem_dados
@@ -231,6 +371,9 @@ evidencias:
   - id: custo_viagem_descontado
     coletor: rota
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: deslocamento
     forca: moderada
     pontos: -15
     aplica_quando: [fora_do_municipio]
@@ -241,6 +384,9 @@ evidencias:
   - id: desconto_ferramentas_epi
     coletor: texto
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: condicoes_trabalho
     forca: moderada
     pontos: -15
     descricao: Desconto ou cobrança de ferramentas e equipamentos de proteção, que são obrigação do empregador
@@ -250,6 +396,9 @@ evidencias:
   - id: alojamento_transporte_outra_localidade
     coletor: rota
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: deslocamento
     forca: moderada
     pontos: -10
     aplica_quando: [mesma_regiao_imediata]
@@ -260,30 +409,31 @@ evidencias:
   - id: empregador_nao_identificavel
     coletor: cnpj
     direcao: risco
+    camada: geral
+    natureza: ausencia
+    categoria: empresa
     forca: moderada
     pontos: -10
     descricao: A oferta não permite identificar quem é o empregador
     texto_usuario: "Não foi possível identificar quem é o empregador. Peça o nome da empresa e o CNPJ."
 
-  - id: destino_setor_alto_risco
-    coletor: rota
-    direcao: risco
-    forca: moderada
-    pontos: -10
-    descricao: Município e setor de destino com histórico de casos no Cadastro de Empregadores
-    texto_usuario: "Já houve casos de trabalho escravo nesse tipo de atividade na região de destino."
-
   - id: contato_informal_exclusivo
     coletor: contato
     direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: contato_e_links
     forca: moderada
     pontos: -10
-    descricao: Contato apenas por WhatsApp ou Telegram e e-mail pessoal
+    descricao: Contato apenas por WhatsApp ou Telegram, sem e-mail, site ou telefone fixo da empresa
     texto_usuario: "O contato é só por aplicativo de mensagem, sem canal oficial da empresa."
 
   - id: dominio_recente
     coletor: contato
     direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: contato_e_links
     forca: moderada
     pontos: -10
     descricao: Domínio do site registrado há menos de 30 dias
@@ -292,15 +442,56 @@ evidencias:
   - id: pedido_sigilo
     coletor: texto
     direcao: risco
+    camada: ambas
+    natureza: presenca
+    categoria: abordagem
     forca: moderada
     pontos: -10
     descricao: A oferta pede que o trabalhador não comente a proposta com ninguém
     texto_usuario: "A oferta pede segredo sobre a proposta. Desconfie e converse com alguém de confiança antes de aceitar."
 
+  - id: tarefa_engajamento
+    coletor: texto
+    direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: tarefa
+    forca: moderada
+    pontos: -15
+    descricao: Promete pagamento para curtir, seguir, avaliar produtos ou assistir vídeos
+    texto_usuario: "A oferta paga para curtir, seguir ou avaliar produtos. É o começo do golpe da tarefa: depois de pequenos pagamentos, pedem que você deposite dinheiro."
+
+  - id: pix_para_terceiro
+    coletor: contato
+    direcao: risco
+    camada: geral
+    natureza: contradicao
+    categoria: dinheiro
+    forca: moderada
+    pontos: -15
+    descricao: Chave PIX de cobrança é um CPF, ou um CNPJ diferente do da empresa da vaga
+    texto_usuario: "O PIX para pagar vai para outra pessoa ou empresa ({valor_observado}), e não para a empresa da vaga."
+
   # Fracas
+  - id: destino_setor_alto_risco
+    # Fraca de propósito: o mapa de risco vem de poucos casos por município e setor.
+    # Sozinha, não liga o alerta de aliciamento, para não estigmatizar regiões inteiras.
+    coletor: rota
+    direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: deslocamento
+    forca: fraca
+    pontos: -5
+    descricao: Município e setor de destino com histórico de casos no Cadastro de Empregadores
+    texto_usuario: "Já houve casos de trabalho escravo nesse tipo de atividade na região de destino."
+
   - id: lista_suja_nome_semelhante
     coletor: listas_mte
     direcao: risco
+    camada: gravidade
+    natureza: presenca
+    categoria: listas_oficiais
     forca: fraca
     pontos: -5
     criterio_match: [nome_aproximado]
@@ -310,6 +501,9 @@ evidencias:
   - id: sem_presenca_digital
     coletor: contato
     direcao: risco
+    camada: geral
+    natureza: ausencia
+    categoria: contato_e_links
     forca: fraca
     pontos: -5
     neutralizar_em_setores_baixa_presenca: true
@@ -319,6 +513,9 @@ evidencias:
   - id: ddd_sem_relacao
     coletor: contato
     direcao: risco
+    camada: geral
+    natureza: contradicao
+    categoria: contato_e_links
     forca: fraca
     pontos: -5
     descricao: DDD do telefone não corresponde à UF da empresa nem à da vaga
@@ -327,6 +524,9 @@ evidencias:
   - id: urgencia
     coletor: texto
     direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: abordagem
     forca: fraca
     pontos: -5
     descricao: Pressão de tempo para aceitar
@@ -335,6 +535,9 @@ evidencias:
   - id: dispensa_requisitos
     coletor: texto
     direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: abordagem
     forca: fraca
     pontos: -5
     descricao: Dispensa total de experiência, qualificação ou documentos
@@ -343,15 +546,44 @@ evidencias:
   - id: ganho_garantido
     coletor: texto
     direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: abordagem
     forca: fraca
     pontos: -5
     descricao: Promessa de ganho garantido ou fixo muito destacado, sem relação com cargo ou jornada
     texto_usuario: "A oferta promete ganho garantido. Confirme por escrito como e quando o valor será pago."
 
+  - id: email_gratuito
+    coletor: contato
+    direcao: risco
+    camada: geral
+    natureza: contradicao
+    categoria: contato_e_links
+    forca: fraca
+    pontos: -5
+    neutralizar_em_setores_baixa_presenca: true
+    descricao: A oferta cita uma empresa, mas o e-mail é de serviço gratuito (Gmail, Hotmail, Outlook etc.)
+    texto_usuario: "A oferta fala em nome de uma empresa, mas o e-mail é pessoal ({valor_observado})."
+
+  - id: link_encurtado
+    coletor: contato
+    direcao: risco
+    camada: geral
+    natureza: presenca
+    categoria: contato_e_links
+    forca: fraca
+    pontos: -5
+    descricao: Link encurtado ou que leva a um domínio diferente do que aparece
+    texto_usuario: "O link está encurtado e leva para {valor_observado}. Confira o endereço antes de abrir."
+
   # Confiança
   - id: cnpj_ativo_antigo
     coletor: cnpj
     direcao: confianca
+    camada: geral
+    natureza: presenca
+    categoria: empresa
     forca: moderada
     pontos: 10
     descricao: CNPJ ativo há mais de 2 anos, com porte compatível
@@ -360,6 +592,9 @@ evidencias:
   - id: dominio_titular_confere
     coletor: contato
     direcao: confianca
+    camada: geral
+    natureza: presenca
+    categoria: contato_e_links
     forca: moderada
     pontos: 10
     descricao: Domínio .br registrado no mesmo CNPJ da vaga
@@ -368,6 +603,9 @@ evidencias:
   - id: endereco_cnpj_no_municipio_vaga
     coletor: cnpj
     direcao: confianca
+    camada: geral
+    natureza: presenca
+    categoria: empresa
     forca: fraca
     pontos: 5
     descricao: Endereço do CNPJ no mesmo município da vaga
@@ -376,6 +614,9 @@ evidencias:
   - id: salario_na_faixa
     coletor: salario
     direcao: confianca
+    camada: geral
+    natureza: presenca
+    categoria: condicoes_trabalho
     forca: fraca
     pontos: 5
     descricao: Salário entre P10 e P90 do CAGED para o cargo e região
@@ -384,6 +625,9 @@ evidencias:
   - id: email_corporativo
     coletor: contato
     direcao: confianca
+    camada: geral
+    natureza: presenca
+    categoria: contato_e_links
     forca: fraca
     pontos: 5
     descricao: E-mail no domínio da própria empresa
@@ -392,6 +636,9 @@ evidencias:
   - id: contrato_informado
     coletor: texto
     direcao: confianca
+    camada: geral
+    natureza: presenca
+    categoria: condicoes_trabalho
     forca: fraca
     pontos: 5
     descricao: Tipo de contrato (CLT ou temporário) e jornada informados

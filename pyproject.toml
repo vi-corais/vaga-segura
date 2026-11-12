@@ -1,7 +1,7 @@
 [project]
 name = "vaga-segura"
-version = "0.3.0"
-description = "Cruza ofertas de emprego com dados públicos brasileiros para apontar indícios de aliciamento para trabalho análogo à escravidão"
+version = "0.4.1"
+description = "Cruza ofertas de emprego com dados públicos brasileiros para apontar indícios de golpe de falso emprego e, no extremo, de aliciamento para trabalho análogo à escravidão"
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.10"

@@ -25,4 +25,27 @@ RelacaoLocalidade = Literal[
 COLETORES = ("cnpj", "listas_mte", "sancoes", "salario", "coerencia", "rota", "contato", "texto")
 Coletor = Literal["cnpj", "listas_mte", "sancoes", "salario", "coerencia", "rota", "contato", "texto"]
 
-Faixa = Literal["alto_risco", "atencao", "sem_sinais_relevantes", "inconclusivo"]
+Faixa = Literal["sinais_fortes", "atencao", "sem_sinais_relevantes", "inconclusivo"]
+
+# Camada 1 (geral): golpes de falso emprego em qualquer vaga.
+# Camada 2 (gravidade): aliciamento para trabalho análogo à escravidão.
+# "ambas": evidência que serve aos dois tipos de risco.
+Camada = Literal["geral", "gravidade", "ambas"]
+
+# presenca: algo que a oferta diz ou tem. contradicao: um dado desmente outro
+# (ex.: domínio de outra empresa). ausencia: falta algo esperado. Ausência nunca é forte.
+Natureza = Literal["presenca", "contradicao", "ausencia"]
+
+# Agrupa as evidências por tipo de problema. O resultado lista as categorias
+# encontradas, e a explicação usa isso para escolher orientações e canais.
+Categoria = Literal[
+    "empresa",
+    "contato_e_links",
+    "dinheiro",
+    "dados_pessoais",
+    "tarefa",
+    "abordagem",
+    "condicoes_trabalho",
+    "deslocamento",
+    "listas_oficiais",
+]

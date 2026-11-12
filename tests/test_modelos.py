@@ -12,7 +12,7 @@ from app.modelos.evidencia import (
     ResultadoColetor,
     Verificacao,
 )
-from app.modelos.extracao import Contatos, Contrato, ExtracaoOferta, Pagamento, Salario, VERSAO_ESQUEMA
+from app.modelos.extracao import ChavePix, Contatos, Contrato, ExtracaoOferta, Pagamento, Salario, VERSAO_ESQUEMA
 
 
 def test_extracao_minima():
@@ -61,7 +61,7 @@ def test_guardrail_explicacao():
     base = dict(
         analise_id=uuid4(),
         criado_em=datetime.now(timezone.utc),
-        versao_catalogo="0.3.0",
+        versao_catalogo="0.4.0",
         versao_esquema=VERSAO_ESQUEMA,
         modelo_ia="qwen3:8b",
         origem="texto",
@@ -78,3 +78,8 @@ def test_guardrail_explicacao():
         ResultadoAnalise(
             **base, explicacao=Explicacao(resumo="x", itens=[ItemExplicacao(evidencia_id="lista_suja_documento", texto="x")])
         )
+
+
+def test_chave_pix_finalidade_padrao():
+    chave = ChavePix(tipo="cpf", valor="12345678900", trecho="pix 123.456.789-00")
+    assert chave.finalidade == "desconhecida"

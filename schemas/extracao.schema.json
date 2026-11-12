@@ -101,6 +101,17 @@
           "title": "Valor",
           "type": "string"
         },
+        "finalidade": {
+          "default": "desconhecida",
+          "description": "'cobranca' quando o trabalhador é que precisa pagar para essa chave",
+          "enum": [
+            "cobranca",
+            "pagamento_ao_trabalhador",
+            "desconhecida"
+          ],
+          "title": "Finalidade",
+          "type": "string"
+        },
         "trecho": {
           "minLength": 1,
           "title": "Trecho",
@@ -591,7 +602,13 @@
             "pedido_documentos_originais",
             "publico_migrante",
             "sigilo",
-            "compra_estabelecimento_indicado"
+            "compra_estabelecimento_indicado",
+            "tarefa_engajamento",
+            "tarefa_paga_com_deposito",
+            "pedido_codigo_ou_senha",
+            "pedido_dados_sensiveis",
+            "conta_laranja",
+            "link_instalar_app"
           ],
           "title": "Tipo",
           "type": "string"
@@ -614,8 +631,8 @@
   "description": "Saída da etapa 1. É este esquema que vai como JSON Schema para o Ollama.",
   "properties": {
     "versao_esquema": {
-      "const": "0.3.0",
-      "default": "0.3.0",
+      "const": "0.4.0",
+      "default": "0.4.0",
       "title": "Versao Esquema",
       "type": "string"
     },

@@ -9,7 +9,7 @@ from typing import Literal, Optional, get_args
 
 from pydantic import Field, model_validator
 
-from .base import Base, Coletor
+from .base import Base, Camada, Categoria, Coletor, Natureza
 from .extracao import ExtracaoOferta
 
 CriterioMatch = Literal["cnpj_exato", "cpf_exato", "socio_cpf_exato", "nome_municipio_cpf_parcial", "nome_aproximado"]
@@ -35,11 +35,17 @@ class Teto(Base):
     quando: list[str] = Field([], description="Condições adicionais (todas precisam valer). Vazio = sempre")
 
 
+Forca = Literal["forte", "moderada", "fraca"]
+
+
 class ItemCatalogo(Base):
     id: str = Field(pattern=r"^[a-z0-9_]+$")
     coletor: Coletor
     direcao: Literal["risco", "confianca"]
-    forca: Literal["forte", "moderada", "fraca"]
+    camada: Camada = Field(description="geral (golpes em qualquer vaga), gravidade (aliciamento) ou ambas")
+    natureza: Natureza = Field(description="presenca, contradicao ou ausencia; ausência nunca é forte")
+    categoria: Categoria
+    forca: Forca
     pontos: int
     descricao: str
     texto_usuario: str = Field(description="Frase para o usuário; aceita {valor_observado} e {referencia}")
@@ -59,6 +65,8 @@ class ItemCatalogo(Base):
             raise ValueError(f"{self.id}: evidência de confiança precisa ter pontos >= 0")
         if self.direcao == "confianca" and self.teto:
             raise ValueError(f"{self.id}: evidência de confiança não pode ter teto")
+        if self.natureza == "ausencia" and (self.forca == "forte" or self.teto):
+            raise ValueError(f"{self.id}: evidência de ausência não pode ser forte nem ter teto")
         return self
 
 
@@ -88,6 +96,7 @@ class Combinacao(Base):
     """Bônus por indicadores que aparecem juntos. Vale só o maior bônus atingido (não acumulam)."""
 
     id: str
+    camada: Camada
     base_legal: list[str]
     indicadores: list[IndicadorCombinacao] = Field(min_length=2)
     bonus: list[BonusCombinacao] = Field(min_length=1)
@@ -111,22 +120,34 @@ class Combinacao(Base):
 class Faixas(Base):
     """Faixas da pontuação (0 a 100).
 
-    0 a alto_risco_ate = alto_risco; até atencao_ate = atencao; acima = sem_sinais_relevantes.
+    0 a sinais_fortes_ate = sinais_fortes; até atencao_ate = atencao; acima = sem_sinais_relevantes.
     Se a cobertura ficar abaixo de cobertura_minima e a pontuação passar de
     inconclusivo_se_pontuacao_acima_de, a faixa vira inconclusivo: verificamos pouco
     para dizer que não há sinais. Abaixo desse valor, a faixa de risco é mantida.
     """
 
-    alto_risco_ate: int = Field(ge=0, le=100)
+    sinais_fortes_ate: int = Field(ge=0, le=100)
     atencao_ate: int = Field(ge=0, le=100)
     cobertura_minima: float = Field(ge=0, le=1)
     inconclusivo_se_pontuacao_acima_de: int = Field(ge=0, le=100)
 
     @model_validator(mode="after")
     def ordem(self):
-        if not self.alto_risco_ate < self.atencao_ate < 100:
-            raise ValueError("faixas: é preciso alto_risco_ate < atencao_ate < 100")
+        if not self.sinais_fortes_ate < self.atencao_ate < 100:
+            raise ValueError("faixas: é preciso sinais_fortes_ate < atencao_ate < 100")
         return self
+
+
+class AlertaAliciamento(Base):
+    """Marcador da camada de gravidade, independente da faixa.
+
+    Liga quando uma evidência de risco da camada "gravidade" com uma das forças
+    listadas é aplicada, ou quando uma das combinações listadas atinge um bônus.
+    Evidências da camada "ambas" (como a cobrança antecipada) não ligam o alerta sozinhas.
+    """
+
+    forcas: list[Forca] = Field(min_length=1)
+    combinacoes: list[str] = []
 
 
 class Catalogo(Base):
@@ -134,6 +155,7 @@ class Catalogo(Base):
     pontuacao_base: int = Field(ge=0, le=100)
     teto_total_confianca: int = Field(ge=0)
     faixas: Faixas
+    alerta_aliciamento: AlertaAliciamento
     condicoes: dict[str, str] = Field({}, description="Condições usadas em teto.quando, aplica_quando e indicadores, com sua definição")
     setores_baixa_presenca_digital: dict[str, list[str]] = Field(
         description="Prefixos de CNAE (divisão) onde ausência de presença digital não pontua"
@@ -158,6 +180,13 @@ class Catalogo(Base):
                 for cond in ind.quando:
                     if cond not in self.condicoes:
                         raise ValueError(f"combinação {c.id}: condição não definida '{cond}'")
+        ids_combinacoes = {c.id for c in self.combinacoes}
+        for c in self.alerta_aliciamento.combinacoes:
+            if c not in ids_combinacoes:
+                raise ValueError(f"alerta_aliciamento: combinação inexistente '{c}'")
+        for c in self.combinacoes:
+            if c.id in self.alerta_aliciamento.combinacoes and c.camada == "geral":
+                raise ValueError(f"alerta_aliciamento: combinação '{c.id}' é da camada geral")
         for setor, divisoes in self.setores_baixa_presenca_digital.items():
             for d in divisoes:
                 if len(d) != 2 or not d.isdigit():

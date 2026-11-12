@@ -145,6 +145,30 @@
           "title": "Forca",
           "type": "string"
         },
+        "camada": {
+          "enum": [
+            "geral",
+            "gravidade",
+            "ambas"
+          ],
+          "title": "Camada",
+          "type": "string"
+        },
+        "categoria": {
+          "enum": [
+            "empresa",
+            "contato_e_links",
+            "dinheiro",
+            "dados_pessoais",
+            "tarefa",
+            "abordagem",
+            "condicoes_trabalho",
+            "deslocamento",
+            "listas_oficiais"
+          ],
+          "title": "Categoria",
+          "type": "string"
+        },
         "pontos": {
           "description": "Pontos do catálogo",
           "title": "Pontos",
@@ -170,6 +194,8 @@
         "fonte",
         "direcao",
         "forca",
+        "camada",
+        "categoria",
         "pontos",
         "pontos_aplicados"
       ],
@@ -371,7 +397,7 @@
     },
     "faixa": {
       "enum": [
-        "alto_risco",
+        "sinais_fortes",
         "atencao",
         "sem_sinais_relevantes",
         "inconclusivo"
@@ -384,6 +410,30 @@
       "minimum": 0,
       "title": "Cobertura",
       "type": "number"
+    },
+    "alerta_aliciamento": {
+      "default": false,
+      "title": "Alerta Aliciamento",
+      "type": "boolean"
+    },
+    "categorias": {
+      "default": [],
+      "items": {
+        "enum": [
+          "empresa",
+          "contato_e_links",
+          "dinheiro",
+          "dados_pessoais",
+          "tarefa",
+          "abordagem",
+          "condicoes_trabalho",
+          "deslocamento",
+          "listas_oficiais"
+        ],
+        "type": "string"
+      },
+      "title": "Categorias",
+      "type": "array"
     },
     "tetos_aplicados": {
       "default": [],

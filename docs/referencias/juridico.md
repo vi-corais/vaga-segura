@@ -1,6 +1,6 @@
 # Referências jurídicas
 
-## 1. Leis que definem o crime e o aliciamento
+## 1. Camada de gravidade: aliciamento e trabalho análogo à escravidão
 
 |Norma|O que define|Pena|Relação com o Vaga Segura|
 |---|---|---|---|
@@ -11,13 +11,24 @@
 |Código Penal, art. 203|Frustração de direito trabalhista mediante fraude. Inclui obrigar o trabalhador a comprar no armazém do empregador para prendê-lo por dívida e reter documentos|Detenção de 1 a 2 anos e multa|Cobre práticas de servidão por dívida|
 |Constituição Federal, art. 243 (EC 81/2014)|Expropriação, sem indenização, de propriedades onde houver exploração de trabalho escravo|-|Contexto do tema, sem uso direto no motor|
 
+## 1.1 Camada geral: golpes de falso emprego
+
+A Febraban enquadra o golpe do falso emprego como estelionato, furto mediante fraude e apropriação indébita. Essas normas dão a base legal das evidências da camada geral, como os arts. 149 e 207 dão à camada de gravidade.
+
+|Norma|O que define|Pena|Relação com o Vaga Segura|
+|---|---|---|---|
+|Código Penal, art. 171|Estelionato: obter vantagem ilícita induzindo alguém em erro, por meio de fraude|Reclusão de 1 a 5 anos e multa|Cobrança antecipada, golpe da tarefa, conta laranja e oferta inventada|
+|Código Penal, art. 171, §2º-A (Lei 14.155/2021)|Fraude eletrônica: estelionato com informações fornecidas pela vítima ou por terceiro induzido a erro por redes sociais, contatos telefônicos, e-mail ou meio semelhante|Reclusão de 4 a 8 anos e multa|Pedido de código, senha ou dados sensíveis e link para instalar app, quase sempre por WhatsApp ou redes sociais|
+|Código Penal, art. 155, §4º, II|Furto mediante fraude|Reclusão de 2 a 8 anos e multa|Uso de dados ou acessos obtidos na falsa seleção para tirar dinheiro da conta da vítima|
+|Código Penal, art. 168|Apropriação indébita|Reclusão de 1 a 4 anos e multa|Citado pela Febraban entre os crimes do golpe do falso emprego|
+
 ## 2. Regulamentação e indicadores oficiais
 
 |Norma|Conteúdo|Uso no projeto|
 |---|---|---|
 |Portaria MTP 671/2021, art. 207|Conceitos operacionais usados pela fiscalização. Considera em condição análoga à de escravo o trabalhador submetido, de forma isolada ou conjunta, a trabalho forçado, jornada exaustiva, entre outros|Vocabulário oficial para os textos explicativos do app|
 |Instrução Normativa MTP 2/2021, Anexo II|Lista oficial de indicadores de submissão a condição análoga à de escravo, divididos em trabalho forçado, condição degradante, jornada exaustiva e outros|Principal referência para calibrar e justificar os sinais. Vários indicadores (alojamento, dívida, retenção de documentos) aparecem como promessa já no anúncio|
-|Portaria Interministerial MTE/MDHC/MIR 18/2024|Regras do Cadastro de Empregadores (Lista Suja)|Base legal da nossa principal fonte de dados|
+|Portaria Interministerial MTE/MDHC/MIR 18/2024|Regras do Cadastro de Empregadores (Lista Suja)|Base legal da principal fonte da camada de gravidade|
 |Lei 7.998/1990, art. 2º-C|Seguro-desemprego para o trabalhador resgatado|Informação útil nas orientações ao usuário|
 |Constituição Federal, art. 7º, IV|Salário mínimo nacional, reajustado por decreto (R$ 1.621 em 2026, Decreto 12.797/2025)|Referência da evidência de salário abaixo do mínimo|
 |CLT, art. 458, §3º|Habitação e alimentação fornecidas como salário-utilidade não podem passar de 25% e 20% do salário contratual|Limite dos descontos de moradia e alimentação no trabalho urbano|
@@ -77,6 +88,8 @@ O art. 2º, IV dá base legal aos nossos sinais, porque os critérios de "indíc
 - [IN MTP 2/2021 (texto integral)](https://www.normaslegais.com.br/legislacao/In-2-2021.htm)
 - [Lei 13.344/2016 (tráfico de pessoas)](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/lei/l13344.htm)
 - [Decreto 12.857/2026 (Protocolo de 2014 da OIT)](https://www.planalto.gov.br/ccivil_03/_Ato2023-2026/2026/Decreto/D12857.htm)
+- [Lei 14.155/2021 (fraude eletrônica)](https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14155.htm)
+- [Agência Brasil - Febraban alerta para o golpe do falso emprego (2026)](https://agenciabrasil.ebc.com.br/geral/noticia/2026-05/febraban-alerta-para-golpe-do-falso-emprego)
 - [Portaria MTP 671/2021 (compilada)](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-1/portarias-vigentes-3/PDFPortarian671de8denovembrode2021compilada08.07.2025.pdf)
 - [MTE - apresentação com os indicadores da IN MTP 2/2021](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/inspecao-do-trabalho/escola/lives-enit-pasta/lives-enit-20221020-apresentacao-detrae-mauricio-krepsky.pdf)
 - [Migalhas - STF julga constitucional a Lista Suja (ADPF 509)](https://www.migalhas.com.br/quentes/333382/lista-suja-do-trabalho-escravo-e-constitucional-decide-stf)

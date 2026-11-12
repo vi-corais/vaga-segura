@@ -1,6 +1,9 @@
 # Notas internas da equipe (competição, entrevista, rascunhos)
 interno/
 
+# Arquivos gerados por assistentes
+Claude outputs/
+
 # Obsidian
 .obsidian/
 .trash/

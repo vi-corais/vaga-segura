@@ -1,24 +1,29 @@
 # Vaga Segura
 
-Ferramenta de código aberto que cruza dados públicos brasileiros (Receita Federal, Cadastro de Empregadores do MTE, Novo CAGED) com IA local para identificar indícios de aliciamento para trabalho análogo à escravidão em ofertas de emprego.
+Ferramenta de código aberto que ajuda quem procura emprego a reconhecer sinais de vaga falsa ou golpe antes de aceitar uma oferta. Ela cruza a oferta com dados públicos brasileiros (Receita Federal, Cadastro de Empregadores do MTE, Novo CAGED, sanções da CGU) e usa IA local para ler o texto.
+
+A análise tem duas camadas:
+
+- **Camada geral:** golpes de falso emprego em qualquer vaga, como cobrança de taxa, golpe da tarefa, pedido de código ou de dados pessoais, links maliciosos e empresa que não existe ou não confere.
+- **Camada de gravidade:** sinais de aliciamento para trabalho análogo à escravidão, como empregador na Lista Suja, transporte e alojamento pagos para outra região e adiantamento que vira dívida.
 
 Projeto criado para o programa AI4Good da Brazil Conference 2027.
 
-> O Vaga Segura aponta indícios a partir de dados públicos. Ele não acusa empresas nem substitui a fiscalização. Em caso de suspeita, denuncie pelo [Sistema Ipê](https://ipe.sit.trabalho.gov.br/) ou pelo Disque 100.
+> O Vaga Segura aponta indícios a partir de dados públicos, em qualquer tipo de vaga. Ele não acusa empresas nem substitui a fiscalização. Em caso de golpe, procure seu banco (e o MED, se pagou por PIX) e registre boletim de ocorrência. Em caso de suspeita de trabalho escravo, denuncie pelo [Sistema Ipê](https://ipe.sit.trabalho.gov.br/) ou pelo Disque 100.
 
 ## Como funciona
 
 1. A pessoa informa uma vez a cidade onde mora e depois encaminha a oferta pelo WhatsApp ou cola no site, em texto ou print.
-2. Um modelo de linguagem rodando localmente extrai o que pode ser verificado: empresa, CNPJ, cargo, salário, local, benefícios e cobranças.
-3. Coletores consultam bases públicas: situação do CNPJ e sócios, Lista Suja e CEAC, sanções da CGU, salário do cargo na região e salário mínimo, se a vaga é fora do município ou da região de quem pergunta, domínio e contatos.
-4. Cada verificação gera evidências com peso definido no catálogo, e o motor calcula uma pontuação de confiança.
-5. O resultado volta em linguagem simples, com as evidências, orientações e os canais oficiais de denúncia.
+2. Um modelo de linguagem rodando localmente extrai o que pode ser verificado: empresa, CNPJ, cargo, salário, local, benefícios, cobranças, contatos, links e pedidos (códigos, dados pessoais, depósitos).
+3. Coletores consultam bases públicas: situação do CNPJ e sócios, sanções da CGU, salário do cargo na região e salário mínimo, domínio, links e contatos. Na camada de gravidade, também a Lista Suja e o CEAC e se a vaga leva a pessoa para fora do município ou da região.
+4. Cada verificação gera evidências com peso definido no catálogo, e o motor calcula uma pontuação de confiança. Sinais da camada de gravidade ligam um alerta próprio, em qualquer faixa.
+5. O resultado volta em linguagem simples, com as evidências, perguntas para fazer ao recrutador, orientações e os canais de denúncia certos para o tipo de golpe.
 
 ![Arquitetura](docs/arquitetura/arquitetura.excalidraw.png)
 
 ## Status
 
-O projeto está na fase de especificação. Os contratos entre os módulos, o catálogo de evidências e o esquema do banco estão prontos e são validados por testes. Coletores, motor de cálculo, ETL, API e bot do WhatsApp ainda não foram implementados; o plano está no [escopo do MVP](docs/escopo-mvp.md).
+O projeto está na fase de especificação. Os contratos entre os módulos, o catálogo de evidências e o esquema do banco estão prontos e são validados por testes, e as telas do aplicativo já estão no [protótipo](docs/prototipo-figma/). Coletores, motor de cálculo, ETL, API e bot do WhatsApp estão em construção, na ordem definida no [escopo do MVP](docs/escopo-mvp.md#ordem-de-entrega).
 
 ## Estrutura
 
@@ -36,6 +41,7 @@ docs/            documentação do projeto
 
 - [Resumo do projeto](docs/resumo.md)
 - [Escopo do MVP](docs/escopo-mvp.md) e [roteiro de evolução](docs/roteiro.md)
+- [Protótipo das telas](docs/prototipo-figma/) (páginas HTML exportadas do Figma)
 - [Contratos entre os módulos](docs/arquitetura/contratos.md)
 - [Bases de dados consultadas](docs/arquitetura/bases-de-dados.md)
 - [Modelo de dados](docs/arquitetura/modelo-de-dados.md)

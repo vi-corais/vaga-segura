@@ -4,6 +4,8 @@
 
 Revisão de escopo de 21 estudos publicados entre janeiro de 2002 e setembro de 2025. Desses, 14 tratam de tráfico laboral e 7 de tráfico sexual, incluídos porque os métodos podem ser aproveitados. Deixamos de lado a parte sobre treinamento de modelos (desbalanceamento de classes, SMOTE, active learning), que não se aplica ao nosso caso.
 
+A revisão trata de tráfico laboral, então embasa sobretudo a camada de gravidade do Vaga Segura. Os achados sobre sinais fracos, pontos cegos digitais e falsos positivos valem também para a camada geral (golpes de falso emprego), cujos sinais vêm de alertas da Febraban, de guias de segurança e das ferramentas analisadas em `interno/projetos-semelhantes.md`.
+
 ## Dificuldades que cruzam com o Vaga Segura
 
 ### 1. O sinal no anúncio é fraco por natureza
@@ -39,7 +41,7 @@ O catálogo de evidências segue essa ideia: constar na Lista Suja é um indicad
 
 Os autores apontam a falta de validação contra casos confirmados como a lacuna que mais se repete nos estudos da fase de recrutamento. Na prática, a acurácia publicada mede a concordância com um indicador indireto, e não a detecção do tráfico.
 
-Mesmo sem treinar modelo, precisamos calibrar os pesos e mostrar que a pontuação funciona. O plano é testar com casos documentados de resgate e com vagas reais conhecidas, e publicar as métricas.
+Mesmo sem treinar modelo, precisamos calibrar os pesos e mostrar que a pontuação funciona. O plano é testar com casos documentados de resgate, com golpes de falso emprego já noticiados e com vagas reais conhecidas, e publicar as métricas separadas por camada.
 
 ### 6. Falsos positivos estigmatizam
 *Discussion -> Socio-technical implications*

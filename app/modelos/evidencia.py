@@ -18,7 +18,7 @@ from uuid import UUID
 
 from pydantic import Field, model_validator
 
-from .base import Base, CanalEntrada, Coletor, Faixa, Origem, RelacaoLocalidade
+from .base import Base, Camada, CanalEntrada, Categoria, Coletor, Faixa, Origem, RelacaoLocalidade
 
 Direcao = Literal["risco", "confianca"]
 Forca = Literal["forte", "moderada", "fraca"]
@@ -70,6 +70,8 @@ class Evidencia(EvidenciaColetada):
 
     direcao: Direcao
     forca: Forca
+    camada: Camada
+    categoria: Categoria
     pontos: int = Field(description="Pontos do catálogo")
     pontos_aplicados: int = Field(
         description="Pontos depois de confianca_coleta e do ajuste de ausência por setor (0 quando neutralizada)"
@@ -94,6 +96,12 @@ class Classificacao(Base):
 
     cobertura: float = Field(ge=0, le=1, description="Verificações concluídas / verificações aplicáveis")
     faixa: Faixa
+    alerta_aliciamento: bool = Field(
+        False, description="Sinais da camada de gravidade (aliciamento). Vale em qualquer faixa"
+    )
+    categorias: list[Categoria] = Field(
+        [], description="Categorias das evidências de risco aplicadas, da que mais tirou pontos para a que menos tirou"
+    )
 
 
 # Etapa 6: explicação e resultado final
@@ -129,6 +137,8 @@ class ResultadoAnalise(Base):
     pontuacao: int = Field(ge=0, le=100)
     faixa: Faixa
     cobertura: float = Field(ge=0, le=1)
+    alerta_aliciamento: bool = False
+    categorias: list[Categoria] = []
     tetos_aplicados: list[str] = Field([], description="Ids das evidências que aplicaram teto")
     bonus_combinacao: int = Field(0, le=0)
     evidencias: list[Evidencia]
