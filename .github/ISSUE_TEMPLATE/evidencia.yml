@@ -1,0 +1,62 @@
+name: Proposta de evidência
+description: Sugira um sinal novo para o catálogo ou a revisão de um peso
+labels: ["catalogo"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        O catálogo de evidências fica em `catalogo/evidencias.yaml`. Cada evidência precisa de justificativa: base legal, fonte oficial ou dado de calibração.
+  - type: input
+    id: nome
+    attributes:
+      label: Nome ou id da evidência
+      placeholder: "ex.: pagamento_cripto"
+    validations:
+      required: true
+  - type: dropdown
+    id: camada
+    attributes:
+      label: Camada
+      options:
+        - Geral (golpes de falso emprego)
+        - Gravidade (aliciamento para trabalho análogo à escravidão)
+        - Ambas
+    validations:
+      required: true
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo
+      options:
+        - Evidência nova de risco
+        - Evidência nova de confiança
+        - Revisão de peso ou teto
+        - Remoção de evidência
+    validations:
+      required: true
+  - type: textarea
+    id: sinal
+    attributes:
+      label: O que o sinal identifica
+      description: Como ele aparece numa oferta. Use um exemplo inventado.
+    validations:
+      required: true
+  - type: textarea
+    id: justificativa
+    attributes:
+      label: Justificativa
+      description: Base legal, fonte oficial, notícia, estudo ou caso de calibração, com link.
+    validations:
+      required: true
+  - type: textarea
+    id: verificacao
+    attributes:
+      label: Como verificar
+      description: O sinal vem do texto, de uma base pública ou de um cruzamento? Qual base?
+  - type: textarea
+    id: falsos_positivos
+    attributes:
+      label: Risco de falso positivo
+      description: Que vagas legítimas poderiam ser marcadas por engano?
+    validations:
+      required: true

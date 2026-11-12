@@ -53,6 +53,16 @@ docs/            documentação do projeto
 - [Calibração e testes do motor](calibracao/README.md): vagas reais do Sine BH, comunicados de resgate do MTE e do MPT, Perfil Resgatado, alertas de golpe e, como apoio, EMSCAD e Operação Fake Job
 - [Referências jurídicas](docs/referencias/juridico.md) e [pesquisa](docs/referencias/pesquisa-pradhan-shehory-2026.md)
 
+## Como contribuir
+
+Contribuições de código, dados, revisão jurídica e documentação são bem-vindas. O trabalho segue um Git Flow simplificado: `main` guarda a versão publicada, `develop` integra o trabalho em andamento, e toda mudança entra por pull request, com revisão de outra pessoa da equipe.
+
+- [Guia de contribuição](CONTRIBUTING.md): branches, commits, pull requests e as regras de privacidade, de catálogo e de linguagem do projeto
+- [Código de conduta](CODE_OF_CONDUCT.md)
+- [Política de segurança](SECURITY.md): falhas de segurança e de privacidade são relatadas de forma privada
+
+Este repositório não recebe denúncias. Para isso, use os canais indicados no início desta página.
+
 ## Licença
 
 Código sob a [Licença Apache 2.0](LICENSE). Os dados consultados pertencem às suas fontes; veja as [atribuições](ATRIBUICOES.md).

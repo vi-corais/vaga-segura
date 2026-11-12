@@ -1,0 +1,49 @@
+name: Problema
+description: Algo não funciona como deveria, ou um resultado parece errado
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Não cole o texto real de uma oferta recebida por outra pessoa, prints, nomes, telefones, chaves PIX ou CPFs. Descreva o caso com suas palavras ou com um exemplo inventado.
+  - type: textarea
+    id: descricao
+    attributes:
+      label: O que aconteceu
+      description: Descreva o problema.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que era esperado
+    validations:
+      required: true
+  - type: textarea
+    id: reproduzir
+    attributes:
+      label: Como reproduzir
+      description: Passos, comando ou exemplo de oferta (inventado ou sem dados pessoais).
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Extração (IA)
+        - Coletores e bases públicas
+        - Motor e catálogo
+        - Explicação do resultado
+        - WhatsApp, site ou aplicativo
+        - Documentação
+        - Não sei
+    validations:
+      required: true
+  - type: dropdown
+    id: tipo_resultado
+    attributes:
+      label: Se for um resultado errado
+      options:
+        - Não se aplica
+        - Falso positivo (vaga legítima marcada como suspeita)
+        - Falso negativo (golpe ou aliciamento que passou)
+        - Evidência ou explicação errada

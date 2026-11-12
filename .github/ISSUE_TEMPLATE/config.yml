@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Recebi uma oferta suspeita de trabalho escravo
+    url: https://ipe.sit.trabalho.gov.br/
+    about: Este repositório não recebe denúncias. Denuncie pelo Sistema Ipê ou pelo Disque 100.
+  - name: Caí em um golpe de falso emprego
+    url: https://www.bcb.gov.br/meubc/faqs/p/o-que-e-mecanismo-especial-devolucao-med
+    about: Procure seu banco (e o MED, se pagou por PIX) e registre boletim de ocorrência.
+  - name: Falha de segurança ou de privacidade
+    url: https://github.com/vi-corais/vaga-segura/security/advisories/new
+    about: Relate de forma privada, sem abrir issue pública.

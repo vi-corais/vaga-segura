@@ -1,0 +1,37 @@
+name: Melhoria ou ideia
+description: Proponha uma funcionalidade, uma fonte de dados ou uma melhoria na documentação
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema ou oportunidade
+      description: O que falta hoje, e para quem.
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: Proposta
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Fontes e bases públicas
+        - Calibração
+        - Extração (IA)
+        - Motor e catálogo
+        - WhatsApp, site ou aplicativo
+        - Jurídico e privacidade
+        - Documentação
+        - Outra
+    validations:
+      required: true
+  - type: textarea
+    id: escopo
+    attributes:
+      label: Relação com o escopo
+      description: Entra no MVP ou numa fase do roteiro (`docs/roteiro.md`)? Tem impacto em privacidade ou nos termos de uso de alguma plataforma?
